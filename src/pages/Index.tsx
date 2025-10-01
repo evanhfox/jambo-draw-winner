@@ -3,7 +3,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { ParticipantsList } from '@/components/ParticipantsList';
 import { WinnersDisplay } from '@/components/WinnersDisplay';
 import { Button } from '@/components/ui/button';
-import { Sparkles, RotateCcw } from 'lucide-react';
+import { Sparkles, RotateCcw, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -96,6 +96,40 @@ const Index = () => {
     toast.info('Ready for a new draw');
   };
 
+  const downloadSampleCSV = () => {
+    const sampleData = [
+      'Sarah Johnson,sarah.johnson@email.com',
+      'Michael Chen,michael.chen@email.com',
+      'Emma Rodriguez,emma.rodriguez@email.com',
+      'James Wilson,james.wilson@email.com',
+      'Olivia Martinez,olivia.martinez@email.com',
+      'David Kim,david.kim@email.com',
+      'Sophia Anderson,sophia.anderson@email.com',
+      'Daniel Brown,daniel.brown@email.com',
+      'Ava Thompson,ava.thompson@email.com',
+      'Matthew Davis,matthew.davis@email.com',
+      'Isabella Garcia,isabella.garcia@email.com',
+      'Christopher Lee,christopher.lee@email.com',
+      'Mia White,mia.white@email.com',
+      'Joshua Taylor,joshua.taylor@email.com',
+      'Charlotte Moore,charlotte.moore@email.com',
+      'Andrew Jackson,andrew.jackson@email.com',
+      'Amelia Harris,amelia.harris@email.com',
+      'Ryan Martinez,ryan.martinez@email.com',
+      'Harper Clark,harper.clark@email.com',
+      'Ethan Lewis,ethan.lewis@email.com'
+    ].join('\n');
+
+    const blob = new Blob([sampleData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample-participants.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sample CSV downloaded!');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-6xl mx-auto py-12 px-4">
@@ -103,9 +137,13 @@ const Index = () => {
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-[hsl(280_70%_60%)] bg-clip-text text-transparent">
             Contest Draw Platform
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground mb-4">
             Secure, auditable, and truly random winner selection
           </p>
+          <Button onClick={downloadSampleCSV} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Download Sample CSV
+          </Button>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
