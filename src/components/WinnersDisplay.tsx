@@ -32,31 +32,55 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
       }
     };
 
-    const csvContent = [
-      'Contest Draw Report',
+    // Generate readable text report
+    const textContent = [
+      '═══════════════════════════════════════════════════════',
+      '          CONTEST DRAW AUDIT REPORT',
+      '═══════════════════════════════════════════════════════',
+      '',
       `Draw ID: ${result.drawId}`,
-      `Timestamp: ${result.timestamp}`,
+      `Draw Date: ${new Date(result.timestamp).toLocaleString()}`,
       `Total Participants: ${result.totalParticipants}`,
       `Winners Selected: ${result.winners.length}`,
       '',
-      'Winners:',
-      'Rank,Name,Email',
-      ...result.winners.map((w, idx) => `${idx + 1},${w.name},${w.email}`)
+      '───────────────────────────────────────────────────────',
+      'RANDOMIZATION METHOD',
+      '───────────────────────────────────────────────────────',
+      'Method: Cryptographically secure (crypto.getRandomValues)',
+      'Algorithm: Fisher-Yates shuffle with crypto random values',
+      'Security: Browser-native Web Crypto API',
+      '',
+      '───────────────────────────────────────────────────────',
+      'WINNERS',
+      '───────────────────────────────────────────────────────',
+      '',
+      ...result.winners.map((w, idx) => 
+        `${(idx + 1).toString().padStart(2, ' ')}. ${w.name}\n    Email: ${w.email}\n`
+      ),
+      '───────────────────────────────────────────────────────',
+      '',
+      'This report certifies that the above winners were selected',
+      'using a cryptographically secure random number generator,',
+      'ensuring a fair and unbiased draw process.',
+      '',
+      `Report generated: ${new Date().toLocaleString()}`,
+      '═══════════════════════════════════════════════════════',
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `contest-draw-${result.drawId}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const textBlob = new Blob([textContent], { type: 'text/plain' });
+    const textUrl = URL.createObjectURL(textBlob);
+    const textLink = document.createElement('a');
+    textLink.href = textUrl;
+    textLink.download = `contest-draw-report-${result.drawId}.txt`;
+    textLink.click();
+    URL.revokeObjectURL(textUrl);
 
+    // Also generate JSON for technical audit
     const jsonBlob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const jsonUrl = URL.createObjectURL(jsonBlob);
     const jsonLink = document.createElement('a');
     jsonLink.href = jsonUrl;
-    jsonLink.download = `contest-draw-${result.drawId}.json`;
+    jsonLink.download = `contest-draw-data-${result.drawId}.json`;
     jsonLink.click();
     URL.revokeObjectURL(jsonUrl);
   };
@@ -106,7 +130,7 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
             className="w-full"
           >
             <Download className="w-4 h-4 mr-2" />
-            Download Audit Report
+            Download Audit Report (TXT + JSON)
           </Button>
         </div>
       </CardContent>
