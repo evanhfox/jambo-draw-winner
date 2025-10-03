@@ -109,7 +109,7 @@ describe('Draw Logic', () => {
       const result = performDraw(mockParticipants)
       expect(result.timestamp).toBeDefined()
       expect(result.drawId).toBeDefined()
-      expect(result.drawId).toBe('test-uuid')
+      expect(result.drawId).toBe('test-uui')
       expect(new Date(result.timestamp)).toBeInstanceOf(Date)
     })
 

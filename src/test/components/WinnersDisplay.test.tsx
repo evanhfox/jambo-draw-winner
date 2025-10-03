@@ -3,28 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { WinnersDisplay } from '@/components/WinnersDisplay'
 
-// Mock URL.createObjectURL and URL.revokeObjectURL
-const mockCreateObjectURL = vi.fn()
-const mockRevokeObjectURL = vi.fn()
-
-Object.defineProperty(global, 'URL', {
-  value: {
-    createObjectURL: mockCreateObjectURL,
-    revokeObjectURL: mockRevokeObjectURL
-  }
-})
-
-// Mock document.createElement and click method
-const mockClick = vi.fn()
-const mockCreateElement = vi.fn(() => ({
-  click: mockClick,
-  href: '',
-  download: ''
-}))
-
-Object.defineProperty(document, 'createElement', {
-  value: mockCreateElement
-})
+// URL and document mocks are handled in global test setup
 
 describe('WinnersDisplay Component', () => {
   const mockDrawResult = {
@@ -44,7 +23,6 @@ describe('WinnersDisplay Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockCreateObjectURL.mockReturnValue('blob:mock-url')
   })
 
   it('renders winners display correctly', () => {
