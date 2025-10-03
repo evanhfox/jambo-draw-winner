@@ -130,9 +130,26 @@ npm run test:watch
 ### Automated Security Scanning
 
 - **Trivy Vulnerability Scanner**: Container and filesystem scanning
-- **Dependency Review**: Automated dependency vulnerability checks
+- **Dependabot Alerts**: Automated dependency vulnerability checks (requires enabling in repo settings)
 - **Weekly Security Scans**: Scheduled security assessments
 - **SARIF Reports**: Results uploaded to GitHub Security tab
+
+**Note**: For enhanced security features like dependency review, enable GitHub Advanced Security in repository settings.
+
+### Enabling Security Features
+
+To get the most out of the security scanning:
+
+1. **Enable Dependabot Alerts**:
+   - Go to repository Settings → Security & analysis
+   - Enable "Dependabot alerts" and "Dependabot security updates"
+
+2. **Enable Dependency Graph**:
+   - Enable "Dependency graph" in the same settings page
+
+3. **GitHub Advanced Security** (for private repos):
+   - Enables dependency review and code scanning
+   - Available for organizations with GitHub Advanced Security
 
 ### Continuous Integration
 
