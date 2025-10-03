@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { ParticipantsList } from '@/components/ParticipantsList';
 import { WinnersDisplay } from '@/components/WinnersDisplay';
+import { RandomnessVisualization } from '@/components/RandomnessVisualization';
 import { Button } from '@/components/ui/button';
-import { Sparkles, RotateCcw, Download } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -23,6 +25,7 @@ const Index = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
 
   const handleFileUpload = (uploadedParticipants: Participant[]) => {
     setParticipants(uploadedParticipants);
@@ -176,6 +179,7 @@ const Index = () => {
                     <RotateCcw className="w-5 h-5" />
                   </Button>
                 </div>
+                <RandomnessVisualization participantCount={participants.length} />
               </>
             )}
           </div>
@@ -185,15 +189,129 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="mt-12 p-6 rounded-lg bg-card border">
-          <h3 className="font-semibold mb-2">About This Draw System</h3>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>✓ Uses cryptographically secure randomization (crypto.getRandomValues)</li>
-            <li>✓ Implements Fisher-Yates shuffle algorithm for unbiased selection</li>
-            <li>✓ Generates unique draw ID for each contest</li>
-            <li>✓ Provides downloadable audit reports (CSV + JSON)</li>
-            <li>✓ Timestamps and tracks all draw metadata</li>
-          </ul>
+        <div className="mt-12 space-y-6">
+          <div className="p-6 rounded-lg bg-card border">
+            <h3 className="font-semibold mb-4 text-lg">🔒 How Our Randomness Works</h3>
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-primary">Cryptographic Security</h4>
+                  <p className="text-sm text-muted-foreground">
+                    We use the browser's native <code className="bg-secondary px-1 rounded">crypto.getRandomValues()</code> API, 
+                    which generates cryptographically secure random numbers suitable for security-sensitive applications.
+                  </p>
+                  <div className="text-xs text-muted-foreground bg-secondary/50 p-2 rounded">
+                    <strong>Technical:</strong> Uses OS-level entropy sources (hardware random number generators, system noise, etc.)
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h4 className="font-medium text-primary">Fisher-Yates Shuffle</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Our algorithm shuffles the entire participant list using the Fisher-Yates method, 
+                    ensuring each participant has an equal probability of being selected.
+                  </p>
+                  <div className="text-xs text-muted-foreground bg-secondary/50 p-2 rounded">
+                    <strong>Algorithm:</strong> O(n) time complexity, mathematically proven unbiased
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-primary mb-2">Step-by-Step Process</h4>
+                <div className="grid md:grid-cols-3 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <div className="font-medium">1. Generate Random Values</div>
+                    <div className="text-muted-foreground text-xs">Create cryptographically secure random numbers for each participant</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-medium">2. Shuffle Participants</div>
+                    <div className="text-muted-foreground text-xs">Apply Fisher-Yates shuffle using the random values</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-medium">3. Select Winners</div>
+                    <div className="text-muted-foreground text-xs">Take the first 7 participants from the shuffled list</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-lg bg-card border">
+            <h3 className="font-semibold mb-2">About This Draw System</h3>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>✓ Uses cryptographically secure randomization (crypto.getRandomValues)</li>
+              <li>✓ Implements Fisher-Yates shuffle algorithm for unbiased selection</li>
+              <li>✓ Generates unique draw ID for each contest</li>
+              <li>✓ Provides downloadable audit reports (TXT + JSON)</li>
+              <li>✓ Timestamps and tracks all draw metadata</li>
+              <li>✓ Open source and auditable code</li>
+            </ul>
+            
+            <Collapsible open={showTechnicalDetails} onOpenChange={setShowTechnicalDetails}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="mt-4 p-0 h-auto font-normal text-sm text-muted-foreground hover:text-foreground">
+                  {showTechnicalDetails ? (
+                    <>
+                      <ChevronDown className="w-4 h-4 mr-1" />
+                      Hide Technical Implementation Details
+                    </>
+                  ) : (
+                    <>
+                      <ChevronRight className="w-4 h-4 mr-1" />
+                      Show Technical Implementation Details
+                    </>
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4 space-y-4">
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Implementation Details</h4>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <strong className="text-primary">Random Number Generation:</strong>
+                      <div className="ml-4 mt-1 text-muted-foreground">
+                        <code className="bg-secondary px-1 rounded">crypto.getRandomValues(new Uint32Array(length))</code>
+                        <br />
+                        Uses OS-level entropy sources including hardware random number generators, system noise, and other unpredictable sources.
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-primary">Shuffle Algorithm:</strong>
+                      <div className="ml-4 mt-1 text-muted-foreground">
+                        <pre className="bg-secondary p-2 rounded text-xs overflow-x-auto">
+{`for (let i = shuffled.length - 1; i > 0; i--) {
+  const j = array[i] % (i + 1);
+  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+}`}
+                        </pre>
+                        Fisher-Yates (Durstenfeld) shuffle with cryptographically secure random values.
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-primary">Security Properties:</strong>
+                      <div className="ml-4 mt-1 text-muted-foreground">
+                        • <strong>Unpredictable:</strong> Cannot be predicted or manipulated<br />
+                        • <strong>Unbiased:</strong> Each participant has equal probability<br />
+                        • <strong>Cryptographic:</strong> Suitable for security-sensitive applications<br />
+                        • <strong>Auditable:</strong> Complete audit trail with timestamps and IDs
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <strong className="text-primary">Browser Compatibility:</strong>
+                      <div className="ml-4 mt-1 text-muted-foreground">
+                        Web Crypto API is supported in all modern browsers (Chrome 11+, Firefox 21+, Safari 7+, Edge 12+)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
         </div>
       </div>
     </div>

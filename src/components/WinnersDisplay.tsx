@@ -28,7 +28,17 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
       winners: result.winners,
       auditInfo: {
         randomizationMethod: 'Cryptographically secure (crypto.getRandomValues)',
+        algorithm: 'Fisher-Yates shuffle with crypto random values',
+        securityLevel: 'Cryptographic (suitable for security-sensitive applications)',
+        entropySource: 'OS-level entropy sources (hardware RNG, system noise)',
         drawDate: new Date(result.timestamp).toLocaleString(),
+        technicalDetails: {
+          randomNumberGenerator: 'Web Crypto API crypto.getRandomValues()',
+          shuffleAlgorithm: 'Fisher-Yates (Durstenfeld variant)',
+          timeComplexity: 'O(n)',
+          biasLevel: 'Mathematically proven unbiased',
+          selectionMethod: 'First N elements from shuffled array'
+        }
       }
     };
 
@@ -44,11 +54,26 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
       `Winners Selected: ${result.winners.length}`,
       '',
       '───────────────────────────────────────────────────────',
-      'RANDOMIZATION METHOD',
+      'RANDOMIZATION METHOD & TECHNICAL DETAILS',
       '───────────────────────────────────────────────────────',
-      'Method: Cryptographically secure (crypto.getRandomValues)',
-      'Algorithm: Fisher-Yates shuffle with crypto random values',
-      'Security: Browser-native Web Crypto API',
+      'Random Number Generator: Web Crypto API crypto.getRandomValues()',
+      'Algorithm: Fisher-Yates shuffle (Durstenfeld variant)',
+      'Security Level: Cryptographic (suitable for security-sensitive applications)',
+      'Entropy Source: OS-level entropy sources (hardware RNG, system noise)',
+      'Time Complexity: O(n) - linear time',
+      'Bias Level: Mathematically proven unbiased',
+      'Selection Method: First N elements from shuffled array',
+      '',
+      'TECHNICAL IMPLEMENTATION:',
+      '1. Generate cryptographically secure random values for each participant',
+      '2. Apply Fisher-Yates shuffle using these random values',
+      '3. Select first 7 participants from the shuffled array',
+      '',
+      'SECURITY NOTES:',
+      '- Uses browser-native Web Crypto API for random number generation',
+      '- Random values are generated using OS-level entropy sources',
+      '- Algorithm is mathematically proven to be unbiased',
+      '- Suitable for security-sensitive applications and contests',
       '',
       '───────────────────────────────────────────────────────',
       'WINNERS',

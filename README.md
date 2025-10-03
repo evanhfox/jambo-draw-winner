@@ -1,8 +1,73 @@
-# Welcome to your Lovable project
+# Contest Draw Platform 🎲
 
-## Project info
+A secure, auditable, and truly random contest draw platform built with React, TypeScript, and cryptographically secure randomization.
 
-**URL**: https://lovable.dev/projects/5387cd64-89ca-40f5-b1b1-e5e573235c39
+## 🔒 Security Features
+
+- **Cryptographically Secure**: Uses `crypto.getRandomValues()` for true randomness
+- **Fisher-Yates Shuffle**: Mathematically proven unbiased selection algorithm
+- **Audit Trail**: Complete documentation with timestamps and unique draw IDs
+- **Transparent Process**: Detailed explanations and visual demonstrations
+- **Downloadable Reports**: TXT and JSON audit reports for verification
+
+## 🚀 Quick Start
+
+### Using Docker (Recommended)
+
+```bash
+# Production deployment
+npm run docker:prod
+
+# Development with hot reload
+npm run docker:dev
+```
+
+### Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## 🐳 Docker Deployment
+
+This project includes a lightweight Docker setup optimized for production:
+
+- **Multi-stage build** for minimal image size (~50-80MB)
+- **nginx:alpine** base for security and performance
+- **Health checks** and monitoring
+- **Gzip compression** and caching
+- **Security headers** included
+
+See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
+
+## 📋 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run docker:prod` | Run production Docker container |
+| `npm run docker:dev` | Run development Docker container |
+| `npm run docker:clean` | Clean Docker system |
+
+## 🏗️ Architecture
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Components**: shadcn/ui + Radix UI + Tailwind CSS
+- **Randomization**: Web Crypto API + Fisher-Yates shuffle
+- **Deployment**: Docker + nginx (production)
+
+## 📊 Project Info
+
+**Lovable URL**: https://lovable.dev/projects/5387cd64-89ca-40f5-b1b1-e5e573235c39
 
 ## How can I edit this code?
 
