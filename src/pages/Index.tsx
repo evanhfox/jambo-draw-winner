@@ -5,6 +5,8 @@ import { WinnersDisplay } from '@/components/WinnersDisplay';
 import { RandomnessVisualization } from '@/components/RandomnessVisualization';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
@@ -26,6 +28,7 @@ const Index = () => {
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
+  const [winnerCount, setWinnerCount] = useState<number>(7);
 
   const handleFileUpload = (uploadedParticipants: Participant[]) => {
     setParticipants(uploadedParticipants);
@@ -34,8 +37,8 @@ const Index = () => {
   };
 
   const performDraw = async () => {
-    if (participants.length < 7) {
-      toast.error('Need at least 7 participants to draw 7 winners');
+    if (participants.length < winnerCount) {
+      toast.error(`Need at least ${winnerCount} participants to draw ${winnerCount} winners`);
       return;
     }
 
@@ -55,7 +58,7 @@ const Index = () => {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    const winners = shuffled.slice(0, 7);
+    const winners = shuffled.slice(0, winnerCount);
     const drawId = crypto.randomUUID().slice(0, 8);
     
     const result: DrawResult = {
@@ -96,6 +99,7 @@ const Index = () => {
   const reset = () => {
     setParticipants([]);
     setDrawResult(null);
+    setWinnerCount(7);
     toast.info('Ready for a new draw');
   };
 
@@ -156,30 +160,55 @@ const Index = () => {
             ) : (
               <>
                 <ParticipantsList participants={participants} />
-                <div className="flex gap-3">
-                  <Button
-                    onClick={performDraw}
-                    disabled={isDrawing || drawResult !== null}
-                    variant="gradient"
-                    className="flex-1 h-14 text-lg"
-                  >
-                    {isDrawing ? (
-                      <>
-                        <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                        Drawing Winners...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Draw 7 Winners
-                      </>
-                    )}
-                  </Button>
-                  <Button onClick={reset} variant="outline" className="h-14">
-                    <RotateCcw className="w-5 h-5" />
-                  </Button>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="winner-count" className="text-sm font-medium">
+                      Number of Winners
+                    </Label>
+                    <Select value={winnerCount.toString()} onValueChange={(value) => setWinnerCount(parseInt(value))}>
+                      <SelectTrigger id="winner-count" className="w-full">
+                        <SelectValue placeholder="Select number of winners" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: Math.min(participants.length, 20) }, (_, i) => i + 1).map((count) => (
+                          <SelectItem key={count} value={count.toString()}>
+                            {count} {count === 1 ? 'Winner' : 'Winners'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Select how many winners to draw from {participants.length} participants
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={performDraw}
+                      disabled={isDrawing || drawResult !== null || participants.length < winnerCount}
+                      variant="gradient"
+                      className="flex-1 h-14 text-lg"
+                    >
+                      {isDrawing ? (
+                        <>
+                          <Sparkles className="w-5 h-5 mr-2 animate-spin" />
+                          Drawing Winners...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          Draw {winnerCount} {winnerCount === 1 ? 'Winner' : 'Winners'}
+                        </>
+                      )}
+                    </Button>
+                    <Button onClick={reset} variant="outline" className="h-14">
+                      <RotateCcw className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
-                <RandomnessVisualization participantCount={participants.length} />
+                
+                <RandomnessVisualization participantCount={participants.length} winnerCount={winnerCount} />
               </>
             )}
           </div>
@@ -230,7 +259,7 @@ const Index = () => {
                   </div>
                   <div className="space-y-1">
                     <div className="font-medium">3. Select Winners</div>
-                    <div className="text-muted-foreground text-xs">Take the first 7 participants from the shuffled list</div>
+                    <div className="text-muted-foreground text-xs">Take the first N participants from the shuffled list (configurable)</div>
                   </div>
                 </div>
               </div>

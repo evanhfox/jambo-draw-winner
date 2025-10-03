@@ -15,14 +15,14 @@ describe('RandomnessVisualization Component', () => {
   })
 
   it('renders visualization component correctly', () => {
-    render(<RandomnessVisualization participantCount={10} />)
+    render(<RandomnessVisualization participantCount={10} winnerCount={7} />)
     
     expect(screen.getByText('Randomness Process Visualization')).toBeInTheDocument()
     expect(screen.getByText('See how our cryptographically secure randomization works')).toBeInTheDocument()
   })
 
   it('displays all three steps correctly', () => {
-    render(<RandomnessVisualization participantCount={10} />)
+    render(<RandomnessVisualization participantCount={10} winnerCount={7} />)
     
     expect(screen.getByText('Generate Random Values')).toBeInTheDocument()
     expect(screen.getByText('Create cryptographically secure random numbers')).toBeInTheDocument()
@@ -216,7 +216,7 @@ describe('RandomnessVisualization Component', () => {
 
   it('handles rapid clicking on demonstration button', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    render(<RandomnessVisualization participantCount={10} />)
+    render(<RandomnessVisualization participantCount={10} winnerCount={7} />)
     
     const demoButton = screen.getByRole('button', { name: /Demonstrate Randomization Process/i })
     
@@ -227,5 +227,32 @@ describe('RandomnessVisualization Component', () => {
     
     // Should still work correctly
     expect(screen.getByText('Demonstrating Process...')).toBeInTheDocument()
+  })
+
+  it('displays correct winner count in step description', () => {
+    render(<RandomnessVisualization participantCount={10} winnerCount={3} />)
+    
+    expect(screen.getByText('Take first 3 from shuffled list')).toBeInTheDocument()
+  })
+
+  it('displays correct winner count in shuffle result', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<RandomnessVisualization participantCount={10} winnerCount={5} />)
+    
+    const demoButton = screen.getByRole('button', { name: /Demonstrate Randomization Process/i })
+    await user.click(demoButton)
+    
+    // Fast-forward through the animation
+    vi.advanceTimersByTime(3000)
+    
+    await waitFor(() => {
+      expect(screen.getByText(/First 5 positions \(highlighted\) would be selected as winners/)).toBeInTheDocument()
+    })
+  })
+
+  it('handles single winner correctly', () => {
+    render(<RandomnessVisualization participantCount={10} winnerCount={1} />)
+    
+    expect(screen.getByText('Take first 1 from shuffled list')).toBeInTheDocument()
   })
 })

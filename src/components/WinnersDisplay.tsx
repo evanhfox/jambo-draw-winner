@@ -67,7 +67,7 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
       'TECHNICAL IMPLEMENTATION:',
       '1. Generate cryptographically secure random values for each participant',
       '2. Apply Fisher-Yates shuffle using these random values',
-      '3. Select first 7 participants from the shuffled array',
+      '3. Select first N participants from the shuffled array (configurable)',
       '',
       'SECURITY NOTES:',
       '- Uses browser-native Web Crypto API for random number generation',

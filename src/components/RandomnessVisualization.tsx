@@ -5,9 +5,10 @@ import { Shuffle, Zap, CheckCircle } from 'lucide-react';
 
 interface RandomnessVisualizationProps {
   participantCount: number;
+  winnerCount: number;
 }
 
-export const RandomnessVisualization = ({ participantCount }: RandomnessVisualizationProps) => {
+export const RandomnessVisualization = ({ participantCount, winnerCount }: RandomnessVisualizationProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
@@ -27,7 +28,7 @@ export const RandomnessVisualization = ({ participantCount }: RandomnessVisualiz
     },
     {
       title: "Select Winners",
-      description: "Take first 7 from shuffled list",
+      description: `Take first ${winnerCount} from shuffled list`,
       icon: <CheckCircle className="w-5 h-5" />,
       color: "text-green-500"
     }
@@ -104,7 +105,7 @@ export const RandomnessVisualization = ({ participantCount }: RandomnessVisualiz
                 <div
                   key={i}
                   className={`px-2 py-1 rounded text-xs font-mono ${
-                    i < 7 ? 'bg-accent text-accent-foreground' : 'bg-secondary'
+                    i < winnerCount ? 'bg-accent text-accent-foreground' : 'bg-secondary'
                   }`}
                 >
                   {idx + 1}
@@ -117,7 +118,7 @@ export const RandomnessVisualization = ({ participantCount }: RandomnessVisualiz
               )}
             </div>
             <div className="text-xs text-muted-foreground mt-2">
-              First 7 positions (highlighted) would be selected as winners
+              First {winnerCount} position{winnerCount === 1 ? '' : 's'} (highlighted) would be selected as winner{winnerCount === 1 ? '' : 's'}
             </div>
           </div>
         )}

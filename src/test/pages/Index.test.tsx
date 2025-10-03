@@ -89,8 +89,50 @@ describe('Index Page Integration Tests', () => {
     await user.upload(fileInput, file)
     
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
     })
+  })
+
+  it('shows winner count selector after file upload', async () => {
+    const user = userEvent.setup()
+    render(<Index />)
+    
+    const csvContent = mockParticipants.map(p => `${p.name},${p.email}`).join('\n')
+    const file = new File([csvContent], 'participants.csv', { type: 'text/csv' })
+    
+    const fileInput = document.getElementById('file-input') as HTMLInputElement
+    await user.upload(fileInput, file)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Number of Winners')).toBeInTheDocument()
+      expect(screen.getByText(/Select how many winners to draw from \d+ participants/)).toBeInTheDocument()
+    })
+  })
+
+  it('allows changing winner count', async () => {
+    const user = userEvent.setup()
+    render(<Index />)
+    
+    const csvContent = mockParticipants.map(p => `${p.name},${p.email}`).join('\n')
+    const file = new File([csvContent], 'participants.csv', { type: 'text/csv' })
+    
+    const fileInput = document.getElementById('file-input') as HTMLInputElement
+    await user.upload(fileInput, file)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Number of Winners')).toBeInTheDocument()
+    })
+    
+    // Click on the select trigger
+    const selectTrigger = screen.getByRole('combobox')
+    await user.click(selectTrigger)
+    
+    // Select 3 winners
+    const threeWinnersOption = screen.getByText('3 Winners')
+    await user.click(threeWinnersOption)
+    
+    // Check that the button text updates
+    expect(screen.getByRole('button', { name: /Draw 3 Winners/i })).toBeInTheDocument()
   })
 
   it('performs draw and shows winners', async () => {
@@ -104,10 +146,10 @@ describe('Index Page Integration Tests', () => {
     await user.upload(fileInput, file)
     
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
     })
     
-    const drawButton = screen.getByRole('button', { name: /Draw 7 Winners/i })
+    const drawButton = screen.getByRole('button', { name: /Draw \d+ Winners/i })
     await user.click(drawButton)
     
     // Should show drawing animation
@@ -131,15 +173,15 @@ describe('Index Page Integration Tests', () => {
     await user.upload(fileInput, file)
     
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
     })
     
-    const drawButton = screen.getByRole('button', { name: /Draw 7 Winners/i })
+    const drawButton = screen.getByRole('button', { name: /Draw \d+ Winners/i })
     await user.click(drawButton)
     
     // Should show error (this would be handled by toast in real app)
     // The button should remain enabled since the draw didn't proceed
-    expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
   })
 
   it('disables draw button after successful draw', async () => {
@@ -153,10 +195,10 @@ describe('Index Page Integration Tests', () => {
     await user.upload(fileInput, file)
     
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
     })
     
-    const drawButton = screen.getByRole('button', { name: /Draw 7 Winners/i })
+    const drawButton = screen.getByRole('button', { name: /Draw \d+ Winners/i })
     await user.click(drawButton)
     
     // Wait for draw to complete
@@ -165,7 +207,7 @@ describe('Index Page Integration Tests', () => {
     }, { timeout: 2000 })
     
     // Draw button should be disabled
-    expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeDisabled()
   })
 
   it('shows reset button and allows reset', async () => {
@@ -179,7 +221,7 @@ describe('Index Page Integration Tests', () => {
     await user.upload(fileInput, file)
     
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Draw 7 Winners/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Draw \d+ Winners/i })).toBeInTheDocument()
     })
     
     // Click reset button
@@ -315,7 +357,7 @@ describe('Index Page Integration Tests', () => {
     })
     
     // 3. Perform draw
-    const drawButton = screen.getByRole('button', { name: /Draw 7 Winners/i })
+    const drawButton = screen.getByRole('button', { name: /Draw \d+ Winners/i })
     await user.click(drawButton)
     
     // 4. Wait for draw to complete
@@ -347,7 +389,7 @@ describe('Index Page Integration Tests', () => {
     })
     
     // Perform draw
-    const drawButton = screen.getByRole('button', { name: /Draw 7 Winners/i })
+    const drawButton = screen.getByRole('button', { name: /Draw \d+ Winners/i })
     await user.click(drawButton)
     
     await waitFor(() => {

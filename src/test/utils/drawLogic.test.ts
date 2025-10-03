@@ -24,9 +24,9 @@ interface DrawResult {
 }
 
 // Extracted draw logic for testing
-function performDraw(participants: Participant[]): DrawResult {
-  if (participants.length < 7) {
-    throw new Error('Need at least 7 participants to draw 7 winners')
+function performDraw(participants: Participant[], winnerCount: number = 7): DrawResult {
+  if (participants.length < winnerCount) {
+    throw new Error(`Need at least ${winnerCount} participants to draw ${winnerCount} winners`)
   }
 
   // Cryptographically secure random selection
@@ -40,7 +40,7 @@ function performDraw(participants: Participant[]): DrawResult {
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
 
-  const winners = shuffled.slice(0, 7)
+  const winners = shuffled.slice(0, winnerCount)
   const drawId = crypto.randomUUID().slice(0, 8)
   
   return {
@@ -195,6 +195,35 @@ describe('Draw Logic', () => {
         expect(count).toBeGreaterThanOrEqual(expectedSelections - tolerance)
         expect(count).toBeLessThanOrEqual(expectedSelections + tolerance)
       })
+    })
+  })
+
+  describe('Configurable Winner Count', () => {
+    it('should draw 1 winner when specified', () => {
+      const result = performDraw(mockParticipants, 1)
+      expect(result.winners).toHaveLength(1)
+    })
+
+    it('should draw 3 winners when specified', () => {
+      const result = performDraw(mockParticipants, 3)
+      expect(result.winners).toHaveLength(3)
+    })
+
+    it('should draw 10 winners when specified', () => {
+      const result = performDraw(mockParticipants, 10)
+      expect(result.winners).toHaveLength(10)
+    })
+
+    it('should throw error when winner count exceeds participants', () => {
+      const fewParticipants = mockParticipants.slice(0, 5)
+      expect(() => performDraw(fewParticipants, 7)).toThrow('Need at least 7 participants to draw 7 winners')
+    })
+
+    it('should handle exactly the same number of winners as participants', () => {
+      const exactlyTen = mockParticipants.slice(0, 10)
+      const result = performDraw(exactlyTen, 10)
+      expect(result.winners).toHaveLength(10)
+      expect(result.totalParticipants).toBe(10)
     })
   })
 
