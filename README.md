@@ -12,7 +12,16 @@ A secure, auditable, and truly random contest draw platform built with React, Ty
 
 ## 🚀 Quick Start
 
-### Using Docker (Recommended)
+### Using Pre-built Container (Recommended)
+
+```bash
+# Pull and run the latest container
+docker run -d -p 3000:80 ghcr.io/evanhfox/jambo-draw-winner:latest
+
+# Access at http://localhost:3000
+```
+
+### Using Docker (Local Build)
 
 ```bash
 # Production deployment
@@ -44,6 +53,14 @@ This project includes a lightweight Docker setup optimized for production:
 - **Health checks** and monitoring
 - **Gzip compression** and caching
 - **Security headers** included
+
+### Container Registry
+
+Pre-built containers are automatically published to GitHub Container Registry:
+
+- **Latest**: `ghcr.io/evanhfox/jambo-draw-winner:latest`
+- **Tagged releases**: `ghcr.io/evanhfox/jambo-draw-winner:v1.0.0`
+- **Branch builds**: `ghcr.io/evanhfox/jambo-draw-winner:main-abc1234`
 
 See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
 
@@ -107,6 +124,29 @@ npm run test:coverage
 # Run tests in watch mode
 npm run test:watch
 ```
+
+## 🔒 Security & CI/CD
+
+### Automated Security Scanning
+
+- **Trivy Vulnerability Scanner**: Container and filesystem scanning
+- **Dependency Review**: Automated dependency vulnerability checks
+- **Weekly Security Scans**: Scheduled security assessments
+- **SARIF Reports**: Results uploaded to GitHub Security tab
+
+### Continuous Integration
+
+- **Automated Testing**: Full test suite on every push/PR
+- **Multi-platform Builds**: AMD64 and ARM64 container support
+- **Container Publishing**: Automatic builds to GitHub Container Registry
+- **Security Scanning**: Trivy scans on every build
+- **Coverage Reports**: Code coverage tracking with Codecov
+
+### Workflow Status
+
+[![CI/CD Pipeline](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/ci.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/ci.yml)
+[![Container Build](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/container.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/container.yml)
+[![Security Scan](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/security.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/security.yml)
 
 ## 🚀 Deployment
 
