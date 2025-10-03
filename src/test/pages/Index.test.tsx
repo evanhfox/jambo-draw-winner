@@ -21,43 +21,72 @@ describe('Index Page Integration Tests', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the main page correctly', () => {
-    render(<Index />)
-    
-    expect(screen.getByText('Contest Draw Platform')).toBeInTheDocument()
-    expect(screen.getByText('Secure, auditable, and truly random winner selection')).toBeInTheDocument()
-    expect(screen.getByText('Download Sample CSV')).toBeInTheDocument()
+  describe('Initial Rendering', () => {
+    it('renders the main page correctly', () => {
+      render(<Index />)
+      
+      expect(screen.getByText('Contest Draw Platform')).toBeInTheDocument()
+      expect(screen.getByText('Secure, auditable, and truly random winner selection')).toBeInTheDocument()
+      expect(screen.getByText('Download Sample CSV')).toBeInTheDocument()
+    })
+
+    it('shows file upload initially', () => {
+      render(<Index />)
+      
+      expect(screen.getByText('Upload Participant List')).toBeInTheDocument()
+      expect(screen.getByText('Drop your CSV file here or click to browse')).toBeInTheDocument()
+    })
+
+    it('shows technical details section', () => {
+      render(<Index />)
+      
+      expect(screen.getByText('🔒 How Our Randomness Works')).toBeInTheDocument()
+      expect(screen.getByText('Cryptographic Security')).toBeInTheDocument()
+      expect(screen.getByText('Fisher-Yates Shuffle')).toBeInTheDocument()
+      expect(screen.getByText('About This Draw System')).toBeInTheDocument()
+    })
+
+    it('shows randomness explanation', () => {
+      render(<Index />)
+      
+      expect(screen.getByText(/We use the browser's native/)).toBeInTheDocument()
+      expect(screen.getByText(/Fisher-Yates shuffle algorithm/)).toBeInTheDocument()
+      expect(screen.getByText(/each participant has an equal probability/)).toBeInTheDocument()
+    })
+
+    it('shows transparency features', () => {
+      render(<Index />)
+      
+      expect(screen.getByText(/Provides downloadable audit reports/)).toBeInTheDocument()
+      expect(screen.getByText(/Generates unique draw ID/)).toBeInTheDocument()
+      expect(screen.getByText(/Timestamps and tracks all draw metadata/)).toBeInTheDocument()
+    })
   })
 
-  it('shows file upload initially', () => {
-    render(<Index />)
-    
-    expect(screen.getByText('Upload Participant List')).toBeInTheDocument()
-    expect(screen.getByText('Drop your CSV file here or click to browse')).toBeInTheDocument()
+  describe('File Upload Interface', () => {
+    it('shows file upload component initially', () => {
+      render(<Index />)
+      
+      expect(screen.getByText('Upload Participant List')).toBeInTheDocument()
+      expect(screen.getByText('Drop your CSV file here or click to browse')).toBeInTheDocument()
+    })
+
+    it('has file input for CSV uploads', () => {
+      render(<Index />)
+      
+      const fileInput = document.getElementById('file-input') as HTMLInputElement
+      expect(fileInput).toBeInTheDocument()
+      expect(fileInput.type).toBe('file')
+      expect(fileInput.accept).toBe('.csv')
+    })
   })
 
-  it('shows technical details section', () => {
-    render(<Index />)
-    
-    expect(screen.getByText('🔒 How Our Randomness Works')).toBeInTheDocument()
-    expect(screen.getByText('Cryptographic Security')).toBeInTheDocument()
-    expect(screen.getByText('Fisher-Yates Shuffle')).toBeInTheDocument()
-    expect(screen.getByText('About This Draw System')).toBeInTheDocument()
-  })
-
-  it('shows randomness explanation', () => {
-    render(<Index />)
-    
-    expect(screen.getByText(/We use the browser's native/)).toBeInTheDocument()
-    expect(screen.getByText(/Fisher-Yates shuffle algorithm/)).toBeInTheDocument()
-    expect(screen.getByText(/each participant has an equal probability/)).toBeInTheDocument()
-  })
-
-  it('shows transparency features', () => {
-    render(<Index />)
-    
-    expect(screen.getByText(/Provides downloadable audit reports/)).toBeInTheDocument()
-    expect(screen.getByText(/Generates unique draw ID/)).toBeInTheDocument()
-    expect(screen.getByText(/Timestamps and tracks all draw metadata/)).toBeInTheDocument()
+  describe('Sample CSV Download', () => {
+    it('has download sample CSV button', () => {
+      render(<Index />)
+      
+      const downloadButton = screen.getByRole('button', { name: /Download Sample CSV/i })
+      expect(downloadButton).toBeInTheDocument()
+    })
   })
 })
