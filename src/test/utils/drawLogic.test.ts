@@ -136,10 +136,10 @@ describe('Draw Logic', () => {
       // First call with pattern 1,2,3...
       const result1 = performDraw(mockParticipants)
       
-      // Second call with pattern 10,20,30...
+      // Second call with completely different pattern (reverse order)
       mockCrypto.getRandomValues.mockImplementation((arr: Uint32Array) => {
         for (let i = 0; i < arr.length; i++) {
-          arr[i] = (i + 1) * 10
+          arr[i] = arr.length - i // Reverse pattern
         }
         return arr
       })

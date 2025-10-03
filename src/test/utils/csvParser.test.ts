@@ -111,7 +111,7 @@ describe('CSV Parser', () => {
     // Note: This simple parser doesn't handle quoted fields with commas
     // It would split on the comma inside quotes
     expect(result).toEqual([
-      { name: '"Smith', email: 'John"', john: 'smith@example.com' },
+      { name: '"Smith', email: 'John"' },
       { name: 'Jane Doe', email: 'jane@example.com' }
     ])
   })

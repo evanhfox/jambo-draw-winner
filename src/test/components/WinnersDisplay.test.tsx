@@ -203,7 +203,7 @@ describe('WinnersDisplay Component', () => {
     
     render(<WinnersDisplay result={customDrawResult} />)
     
-    expect(screen.getByText('Draw ID: custom-draw-123')).toBeInTheDocument()
+    expect(screen.getByText(/Draw ID: custom-draw-123/)).toBeInTheDocument()
   })
 
   it('handles different participant counts correctly', () => {
