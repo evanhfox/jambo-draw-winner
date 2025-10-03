@@ -47,17 +47,6 @@ This project includes a lightweight Docker setup optimized for production:
 
 See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
 
-## 📋 Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run docker:prod` | Run production Docker container |
-| `npm run docker:dev` | Run development Docker container |
-| `npm run docker:clean` | Clean Docker system |
-
 ## 🏗️ Architecture
 
 - **Frontend**: React 18 + TypeScript + Vite
@@ -65,74 +54,92 @@ See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
 - **Randomization**: Web Crypto API + Fisher-Yates shuffle
 - **Deployment**: Docker + nginx (production)
 
-## 📊 Project Info
+## 🛠️ Development
 
-**Lovable URL**: https://lovable.dev/projects/5387cd64-89ca-40f5-b1b1-e5e573235c39
+### Prerequisites
 
-## How can I edit this code?
+- Node.js 18+ and npm
+- Docker (optional, for containerized deployment)
 
-There are several ways of editing your application.
+### Getting Started
 
-**Use Lovable**
+```bash
+# Clone the repository
+git clone https://github.com/evanhfox/jambo-draw-winner.git
+cd jambo-draw-winner
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5387cd64-89ca-40f5-b1b1-e5e573235c39) and start prompting.
+# Install dependencies
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Available Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run test` | Run test suite |
+| `npm run test:coverage` | Run tests with coverage |
+| `npm run docker:prod` | Run production Docker container |
+| `npm run docker:dev` | Run development Docker container |
+| `npm run docker:clean` | Clean Docker system |
 
-**Use GitHub Codespaces**
+## 🧪 Testing
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This project includes comprehensive testing:
 
-## What technologies are used for this project?
+- **Unit Tests**: Core logic and utilities
+- **Component Tests**: React component behavior
+- **Integration Tests**: End-to-end user workflows
+- **Coverage Reports**: Detailed test coverage analysis
 
-This project is built with:
+```bash
+# Run all tests
+npm run test
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Run tests with coverage
+npm run test:coverage
 
-## How can I deploy this project?
+# Run tests in watch mode
+npm run test:watch
+```
 
-Simply open [Lovable](https://lovable.dev/projects/5387cd64-89ca-40f5-b1b1-e5e573235c39) and click on Share -> Publish.
+## 🚀 Deployment
 
-## Can I connect a custom domain to my Lovable project?
+### Docker Deployment (Recommended)
 
-Yes, you can!
+```bash
+# Build and run production container
+npm run docker:prod
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Access at http://localhost:3000
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Manual Deployment
+
+```bash
+# Build the application
+npm run build
+
+# Serve the dist folder with any static server
+# Example with serve:
+npx serve dist
+```
+
+## 📚 Documentation
+
+- [Docker Setup](./DOCKER.md) - Detailed Docker configuration
+- [Testing Guide](./TESTING.md) - Comprehensive testing documentation
+- [Manual Testing](./MANUAL_TESTING.md) - Manual testing procedures
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
