@@ -22,7 +22,7 @@ describe('FileUpload Component', () => {
   it('has hidden file input', () => {
     render(<FileUpload onFileUpload={mockOnFileUpload} />)
     
-    const fileInput = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const fileInput = document.getElementById('file-input') as HTMLInputElement
     expect(fileInput).toBeInTheDocument()
     expect(fileInput.type).toBe('file')
     expect(fileInput.accept).toBe('.csv')

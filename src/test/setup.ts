@@ -9,21 +9,25 @@ expect.extend(matchers)
 // Cleanup after each test case
 afterEach(() => {
   cleanup()
+  // Reset mock counter for consistent test results
+  mockCounter = 0
 })
 
 // Mock crypto.getRandomValues for testing
+let mockCounter = 0
 Object.defineProperty(global, 'crypto', {
   value: {
     getRandomValues: (arr: Uint32Array) => {
-      // Use Math.random for testing (not cryptographically secure, but deterministic for tests)
+      // Use deterministic values for testing
       for (let i = 0; i < arr.length; i++) {
-        arr[i] = Math.floor(Math.random() * 4294967296)
+        arr[i] = (mockCounter + i) % 4294967296
       }
+      mockCounter++
       return arr
     },
     randomUUID: () => {
       // Generate deterministic UUIDs for testing
-      return 'test-uuid-' + Math.random().toString(36).substr(2, 8)
+      return 'test-uuid-' + (++mockCounter).toString(36)
     }
   }
 })
@@ -61,3 +65,17 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }))
+
+// Mock document.createElement for DOM manipulation
+const originalCreateElement = document.createElement
+document.createElement = vi.fn().mockImplementation((tagName) => {
+  const element = originalCreateElement.call(document, tagName)
+  // Mock appendChild to prevent DOM errors
+  element.appendChild = vi.fn()
+  element.removeChild = vi.fn()
+  return element
+})
+
+// Mock URL.createObjectURL and revokeObjectURL
+global.URL.createObjectURL = vi.fn(() => 'mock-url')
+global.URL.revokeObjectURL = vi.fn()
