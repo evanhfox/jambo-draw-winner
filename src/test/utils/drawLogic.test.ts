@@ -147,7 +147,8 @@ describe('Draw Logic', () => {
       const result2 = performDraw(mockParticipants)
       
       // Results should be different due to different random values
-      expect(result1.winners).not.toEqual(result2.winners)
+      // Since we're using deterministic patterns, we can check specific differences
+      expect(result1.winners[0].name).not.toEqual(result2.winners[0].name)
     })
   })
 

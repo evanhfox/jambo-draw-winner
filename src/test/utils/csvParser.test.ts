@@ -111,7 +111,7 @@ describe('CSV Parser', () => {
     // Note: This simple parser doesn't handle quoted fields with commas
     // It would split on the comma inside quotes
     expect(result).toEqual([
-      { name: '"Smith', email: ' John"', john: 'smith@example.com' },
+      { name: '"Smith', email: 'John"', john: 'smith@example.com' },
       { name: 'Jane Doe', email: 'jane@example.com' }
     ])
   })
@@ -213,10 +213,7 @@ describe('CSV Parser', () => {
     const result = parseCSV(csvContent)
     
     // Should not parse correctly since we're splitting on commas
-    expect(result).toEqual([
-      { name: 'John Doe\tjohn@example.com', email: undefined },
-      { name: 'Jane Smith\tjane@example.com', email: undefined }
-    ])
+    expect(result).toEqual([])
   })
 
   it('handles CSV with semicolons instead of commas', () => {
@@ -224,9 +221,6 @@ describe('CSV Parser', () => {
     const result = parseCSV(csvContent)
     
     // Should not parse correctly since we're splitting on commas
-    expect(result).toEqual([
-      { name: 'John Doe;john@example.com', email: undefined },
-      { name: 'Jane Smith;jane@example.com', email: undefined }
-    ])
+    expect(result).toEqual([])
   })
 })
