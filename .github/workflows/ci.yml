@@ -24,7 +24,7 @@ jobs:
         bun-version: latest
         
     - name: Install dependencies
-      run: bun install --frozen-lockfile
+      run: bun install
       
     - name: Run tests
       run: bun run test:coverage
@@ -131,7 +131,7 @@ jobs:
         
     - name: Build for Pages
       run: |
-        bun install --frozen-lockfile
+        bun install
         bun run build
         
     - name: Deploy to GitHub Pages

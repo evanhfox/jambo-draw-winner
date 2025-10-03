@@ -6,14 +6,14 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile --production
+COPY package.json ./
+RUN bun install --production
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile
+COPY package.json ./
+RUN bun install
 COPY . .
 
 # Build the application
