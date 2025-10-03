@@ -105,7 +105,8 @@ describe('Index Page Integration Tests', () => {
     
     await waitFor(() => {
       expect(screen.getByText('Number of Winners')).toBeInTheDocument()
-      expect(screen.getByText(/Select how many winners to draw from \d+ participants/)).toBeInTheDocument()
+      expect(screen.getByText(/Enter how many winners to draw \(1 to \d+ participants available\)/)).toBeInTheDocument()
+      expect(screen.getByDisplayValue('7')).toBeInTheDocument() // Default value
     })
   })
 
@@ -123,16 +124,42 @@ describe('Index Page Integration Tests', () => {
       expect(screen.getByText('Number of Winners')).toBeInTheDocument()
     })
     
-    // Click on the select trigger
-    const selectTrigger = screen.getByRole('combobox')
-    await user.click(selectTrigger)
-    
-    // Select 3 winners
-    const threeWinnersOption = screen.getByText('3 Winners')
-    await user.click(threeWinnersOption)
+    // Type in the input field
+    const winnerCountInput = screen.getByDisplayValue('7')
+    await user.clear(winnerCountInput)
+    await user.type(winnerCountInput, '3')
     
     // Check that the button text updates
     expect(screen.getByRole('button', { name: /Draw 3 Winners/i })).toBeInTheDocument()
+  })
+
+  it('validates winner count input', async () => {
+    const user = userEvent.setup()
+    render(<Index />)
+    
+    const csvContent = mockParticipants.map(p => `${p.name},${p.email}`).join('\n')
+    const file = new File([csvContent], 'participants.csv', { type: 'text/csv' })
+    
+    const fileInput = document.getElementById('file-input') as HTMLInputElement
+    await user.upload(fileInput, file)
+    
+    await waitFor(() => {
+      expect(screen.getByText('Number of Winners')).toBeInTheDocument()
+    })
+    
+    const winnerCountInput = screen.getByDisplayValue('7')
+    
+    // Test invalid input (too high)
+    await user.clear(winnerCountInput)
+    await user.type(winnerCountInput, '100')
+    await user.tab() // Trigger onBlur
+    expect(screen.getByDisplayValue('10')).toBeInTheDocument() // Should clamp to max participants
+    
+    // Test invalid input (too low)
+    await user.clear(winnerCountInput)
+    await user.type(winnerCountInput, '0')
+    await user.tab() // Trigger onBlur
+    expect(screen.getByDisplayValue('1')).toBeInTheDocument() // Should clamp to 1
   })
 
   it('performs draw and shows winners', async () => {

@@ -5,7 +5,7 @@ import { WinnersDisplay } from '@/components/WinnersDisplay';
 import { RandomnessVisualization } from '@/components/RandomnessVisualization';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
@@ -166,20 +166,34 @@ const Index = () => {
                     <Label htmlFor="winner-count" className="text-sm font-medium">
                       Number of Winners
                     </Label>
-                    <Select value={winnerCount.toString()} onValueChange={(value) => setWinnerCount(parseInt(value))}>
-                      <SelectTrigger id="winner-count" className="w-full">
-                        <SelectValue placeholder="Select number of winners" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: Math.min(participants.length, 20) }, (_, i) => i + 1).map((count) => (
-                          <SelectItem key={count} value={count.toString()}>
-                            {count} {count === 1 ? 'Winner' : 'Winners'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="winner-count"
+                      type="number"
+                      min="1"
+                      max={participants.length}
+                      value={winnerCount}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 1 && value <= participants.length) {
+                          setWinnerCount(value);
+                        } else if (e.target.value === '') {
+                          // Allow empty input temporarily for better UX
+                          setWinnerCount(1);
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (isNaN(value) || value < 1) {
+                          setWinnerCount(1);
+                        } else if (value > participants.length) {
+                          setWinnerCount(participants.length);
+                        }
+                      }}
+                      className="w-full"
+                      placeholder="Enter number of winners"
+                    />
                     <p className="text-xs text-muted-foreground">
-                      Select how many winners to draw from {participants.length} participants
+                      Enter how many winners to draw (1 to {participants.length} participants available)
                     </p>
                   </div>
                   
