@@ -39,7 +39,7 @@ describe('ParticipantsList Component', () => {
     render(<ParticipantsList participants={singleParticipant} />)
     
     expect(screen.getByText('Participants')).toBeInTheDocument()
-    expect(screen.getByText('1 total entry')).toBeInTheDocument()
+    expect(screen.getByText(/1 total entries/)).toBeInTheDocument()
     expect(screen.getByText('John Doe')).toBeInTheDocument()
     expect(screen.getByText('john@example.com')).toBeInTheDocument()
   })

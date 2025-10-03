@@ -66,22 +66,10 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }))
 
-// Mock document.createElement for DOM manipulation
-const originalCreateElement = document.createElement
-document.createElement = vi.fn().mockImplementation((tagName) => {
-  const element = originalCreateElement.call(document, tagName)
-  // Mock appendChild to prevent DOM errors but still allow normal operation
-  const originalAppendChild = element.appendChild
-  element.appendChild = vi.fn().mockImplementation((child) => {
-    return originalAppendChild.call(element, child)
-  })
-  const originalRemoveChild = element.removeChild
-  element.removeChild = vi.fn().mockImplementation((child) => {
-    return originalRemoveChild.call(element, child)
-  })
-  return element
-})
-
 // Mock URL.createObjectURL and revokeObjectURL
 global.URL.createObjectURL = vi.fn(() => 'mock-url')
 global.URL.revokeObjectURL = vi.fn()
+
+// Remove DOM mocks that interfere with React Testing Library
+
+// Remove DOM mocks that interfere with React Testing Library
