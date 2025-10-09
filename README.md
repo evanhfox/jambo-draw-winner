@@ -41,7 +41,7 @@ Timestamp,Email Address,Response
 
 ```bash
 # Pull and run the latest container
-docker run -d -p 3000:80 ghcr.io/evanhfox/jambo-draw-winner:latest
+docker run -d -p 3000:80 ghcr.io/evanhfox/contest-draw:latest
 
 # Access at http://localhost:3000
 ```
@@ -50,8 +50,8 @@ docker run -d -p 3000:80 ghcr.io/evanhfox/jambo-draw-winner:latest
 
 ```bash
 # Clone the repository
-git clone https://github.com/evanhfox/jambo-draw-winner.git
-cd jambo-draw-winner
+git clone https://github.com/evanhfox/contest-draw.git
+cd contest-draw
 
 # Install dependencies
 npm install
@@ -86,9 +86,9 @@ This project includes a lightweight Docker setup optimized for production:
 
 Pre-built containers are automatically published to GitHub Container Registry:
 
-- **Latest**: `ghcr.io/evanhfox/jambo-draw-winner:latest`
-- **Tagged releases**: `ghcr.io/evanhfox/jambo-draw-winner:v1.0.0`
-- **Branch builds**: `ghcr.io/evanhfox/jambo-draw-winner:main-abc1234`
+- **Latest**: `ghcr.io/evanhfox/contest-draw:latest`
+- **Tagged releases**: `ghcr.io/evanhfox/contest-draw:v1.0.0`
+- **Branch builds**: `ghcr.io/evanhfox/contest-draw:main-abc1234`
 
 See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
 
@@ -110,8 +110,8 @@ See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.
 
 ```bash
 # Clone the repository
-git clone https://github.com/evanhfox/jambo-draw-winner.git
-cd jambo-draw-winner
+git clone https://github.com/evanhfox/contest-draw.git
+cd contest-draw
 
 # Install dependencies
 npm install
@@ -210,9 +210,9 @@ To get the most out of the security scanning:
 
 ### Workflow Status
 
-[![CI/CD Pipeline](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/ci.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/ci.yml)
-[![Container Build](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/container.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/container.yml)
-[![Security Scan](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/security.yml/badge.svg)](https://github.com/evanhfox/jambo-draw-winner/actions/workflows/security.yml)
+[![CI/CD Pipeline](https://github.com/evanhfox/contest-draw/actions/workflows/ci.yml/badge.svg)](https://github.com/evanhfox/contest-draw/actions/workflows/ci.yml)
+[![Container Build](https://github.com/evanhfox/contest-draw/actions/workflows/container.yml/badge.svg)](https://github.com/evanhfox/contest-draw/actions/workflows/container.yml)
+[![Security Scan](https://github.com/evanhfox/contest-draw/actions/workflows/security.yml/badge.svg)](https://github.com/evanhfox/contest-draw/actions/workflows/security.yml)
 
 ## 🚀 Deployment
 

@@ -136,16 +136,16 @@ jobs:
       
     - name: Build Production Container Image
       run: |
-        docker build -t jambo-draw-winner:latest .
+        docker build -t contest-draw:latest .
         echo "✅ Docker container image built successfully"
-        docker images jambo-draw-winner:latest
+        docker images contest-draw:latest
         
     - name: Run Trivy Container Vulnerability Scan
       id: trivy-container
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'image'
-        scan-ref: 'jambo-draw-winner:latest'
+        scan-ref: 'contest-draw:latest'
         format: 'sarif'
         output: 'trivy-container-results.sarif'
         exit-code: '1'
@@ -162,7 +162,7 @@ jobs:
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'image'
-        scan-ref: 'jambo-draw-winner:latest'
+        scan-ref: 'contest-draw:latest'
         format: 'table'
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true

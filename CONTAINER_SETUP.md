@@ -6,7 +6,7 @@ The container workflows are currently disabled due to GitHub Container Registry 
 
 ### 1. Enable GitHub Container Registry
 
-1. Go to your repository settings: `https://github.com/evanhfox/jambo-draw-winner/settings`
+1. Go to your repository settings: `https://github.com/evanhfox/contest-draw/settings`
 2. Navigate to **Actions** → **General**
 3. Under **Workflow permissions**, ensure:
    - ✅ **Read and write permissions** is selected
@@ -55,10 +55,10 @@ You can still build containers locally:
 
 ```bash
 # Build the container
-docker build -t jambo-draw-winner .
+docker build -t contest-draw .
 
 # Run locally
-docker run -p 3000:80 jambo-draw-winner
+docker run -p 3000:80 contest-draw
 
 # Or use docker-compose
 docker-compose up

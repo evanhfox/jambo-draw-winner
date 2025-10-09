@@ -42,7 +42,7 @@ bun audit
 bun run build
 
 # Test Docker build
-docker build -t jambo-draw-winner:latest .
+docker build -t contest-draw:latest .
 
 # View workflow runs
 # Go to GitHub → Actions tab

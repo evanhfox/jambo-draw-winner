@@ -95,7 +95,7 @@ graph TD
 **Triggers:** Every push and pull request
 **Dependencies:** `application-build` (builds after app is ready)
 **Permissions:** `contents: read`, `security-events: write`
-**Image Tag:** `jambo-draw-winner:latest`
+**Image Tag:** `contest-draw:latest`
 **Security Gates:** Fails on critical/high vulnerabilities with fixes available
 
 ### Phase 5: Production Deployment
@@ -200,7 +200,7 @@ bun audit
 bun run build
 
 # Test Docker build
-docker build -t jambo-draw-winner:latest .
+docker build -t contest-draw:latest .
 ```
 
 ### Testing Workflow Changes
