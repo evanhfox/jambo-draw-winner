@@ -26,7 +26,72 @@ describe('WinnersDisplay Component', () => {
     ],
     timestamp: '2024-01-15T10:30:00.000Z',
     totalParticipants: 100,
-    drawId: 'abc12345'
+    drawId: 'abc12345',
+    allParticipants: [
+      { name: 'Alice Johnson', email: 'alice@example.com' },
+      { name: 'Bob Smith', email: 'bob@example.com' },
+      { name: 'Charlie Brown', email: 'charlie@example.com' },
+      { name: 'Diana Wilson', email: 'diana@example.com' },
+      { name: 'Eve Davis', email: 'eve@example.com' },
+      { name: 'Frank Miller', email: 'frank@example.com' },
+      { name: 'Grace Taylor', email: 'grace@example.com' },
+      { name: 'Henry Adams', email: 'henry@example.com' },
+      { name: 'Ivy Chen', email: 'ivy@example.com' },
+      { name: 'Jack Wilson', email: 'jack@example.com' }
+    ],
+    csvFormat: 'simple' as const,
+    randomizationDetails: {
+      randomValues: [0.12345678, 0.87654321, 0.45678901, 0.23456789, 0.78901234, 0.34567890, 0.56789012, 0.89012345, 0.67890123, 0.90123456],
+      preShuffleOrder: [
+        { name: 'Alice Johnson', email: 'alice@example.com' },
+        { name: 'Bob Smith', email: 'bob@example.com' },
+        { name: 'Charlie Brown', email: 'charlie@example.com' },
+        { name: 'Diana Wilson', email: 'diana@example.com' },
+        { name: 'Eve Davis', email: 'eve@example.com' },
+        { name: 'Frank Miller', email: 'frank@example.com' },
+        { name: 'Grace Taylor', email: 'grace@example.com' },
+        { name: 'Henry Adams', email: 'henry@example.com' },
+        { name: 'Ivy Chen', email: 'ivy@example.com' },
+        { name: 'Jack Wilson', email: 'jack@example.com' }
+      ],
+      postShuffleOrder: [
+        { name: 'Alice Johnson', email: 'alice@example.com' },
+        { name: 'Bob Smith', email: 'bob@example.com' },
+        { name: 'Charlie Brown', email: 'charlie@example.com' },
+        { name: 'Diana Wilson', email: 'diana@example.com' },
+        { name: 'Eve Davis', email: 'eve@example.com' },
+        { name: 'Frank Miller', email: 'frank@example.com' },
+        { name: 'Grace Taylor', email: 'grace@example.com' },
+        { name: 'Henry Adams', email: 'henry@example.com' },
+        { name: 'Ivy Chen', email: 'ivy@example.com' },
+        { name: 'Jack Wilson', email: 'jack@example.com' }
+      ],
+      shuffleSteps: [
+        { step: 1, description: 'Swapping position 9 with position 2', participant: { name: 'Ivy Chen', email: 'ivy@example.com' }, randomValue: 0.67890123, newPosition: 2 },
+        { step: 2, description: 'Swapping position 8 with position 5', participant: { name: 'Henry Adams', email: 'henry@example.com' }, randomValue: 0.89012345, newPosition: 5 },
+        { step: 3, description: 'Swapping position 7 with position 1', participant: { name: 'Grace Taylor', email: 'grace@example.com' }, randomValue: 0.56789012, newPosition: 1 },
+        { step: 4, description: 'Swapping position 6 with position 3', participant: { name: 'Frank Miller', email: 'frank@example.com' }, randomValue: 0.34567890, newPosition: 3 },
+        { step: 5, description: 'Swapping position 5 with position 0', participant: { name: 'Eve Davis', email: 'eve@example.com' }, randomValue: 0.78901234, newPosition: 0 },
+        { step: 6, description: 'Swapping position 4 with position 2', participant: { name: 'Diana Wilson', email: 'diana@example.com' }, randomValue: 0.23456789, newPosition: 2 },
+        { step: 7, description: 'Swapping position 3 with position 1', participant: { name: 'Charlie Brown', email: 'charlie@example.com' }, randomValue: 0.45678901, newPosition: 1 },
+        { step: 8, description: 'Swapping position 2 with position 0', participant: { name: 'Bob Smith', email: 'bob@example.com' }, randomValue: 0.87654321, newPosition: 0 },
+        { step: 9, description: 'Swapping position 1 with position 0', participant: { name: 'Alice Johnson', email: 'alice@example.com' }, randomValue: 0.12345678, newPosition: 0 }
+      ]
+    },
+    processingDetails: {
+      csvSourceInfo: 'Simple CSV Format - Direct name,email pairs',
+      parsingNotes: [
+        'Direct CSV parsing without headers',
+        'Split on comma delimiter',
+        'Trimmed whitespace from all fields'
+      ],
+      validationResults: {
+        totalEntries: 10,
+        validEntries: 10,
+        invalidEntries: 0,
+        duplicatesRemoved: 0
+      }
+    }
   }
 
   beforeEach(() => {
@@ -64,7 +129,7 @@ describe('WinnersDisplay Component', () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked (download functionality is complex to test in jsdom)
@@ -76,7 +141,7 @@ describe('WinnersDisplay Component', () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked
@@ -88,7 +153,7 @@ describe('WinnersDisplay Component', () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked
@@ -220,7 +285,7 @@ describe('WinnersDisplay Component', () => {
     render(<WinnersDisplay result={mockDrawResult} />)
     
     // Check that download button is accessible
-    const downloadButton = screen.getByRole('button', { name: /Download Audit Report/i })
+    const downloadButton = screen.getByRole('button', { name: /Download Comprehensive Audit Report/i })
     expect(downloadButton).toBeInTheDocument()
     
     // Check that winner cards have proper structure

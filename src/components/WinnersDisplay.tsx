@@ -12,6 +12,30 @@ interface DrawResult {
   timestamp: string;
   totalParticipants: number;
   drawId: string;
+  allParticipants: Participant[];
+  csvFormat: 'simple' | 'google-forms';
+  randomizationDetails: {
+    randomValues: number[];
+    preShuffleOrder: Participant[];
+    postShuffleOrder: Participant[];
+    shuffleSteps: Array<{
+      step: number;
+      description: string;
+      participant: Participant;
+      randomValue: number;
+      newPosition: number;
+    }>;
+  };
+  processingDetails: {
+    csvSourceInfo: string;
+    parsingNotes: string[];
+    validationResults: {
+      totalEntries: number;
+      validEntries: number;
+      invalidEntries: number;
+      duplicatesRemoved: number;
+    };
+  };
 }
 
 interface WinnersDisplayProps {
@@ -20,88 +44,213 @@ interface WinnersDisplayProps {
 
 export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
   const downloadReport = () => {
-    const report = {
+    const drawDate = new Date(result.timestamp);
+    const reportDate = new Date();
+    
+    // Calculate statistical measures
+    const entropy = result.randomizationDetails.randomValues.reduce((sum, val) => {
+      return sum - val * Math.log2(val || 0.000001);
+    }, 0);
+    
+    const meanRandom = result.randomizationDetails.randomValues.reduce((sum, val) => sum + val, 0) / result.randomizationDetails.randomValues.length;
+    const variance = result.randomizationDetails.randomValues.reduce((sum, val) => sum + Math.pow(val - meanRandom, 2), 0) / result.randomizationDetails.randomValues.length;
+    
+    // Generate comprehensive text report
+    const textContent = [
+      '═══════════════════════════════════════════════════════════════════════════════════════',
+      '                           COMPREHENSIVE CONTEST DRAW AUDIT REPORT',
+      '═══════════════════════════════════════════════════════════════════════════════════════',
+      '',
+      'EXECUTIVE SUMMARY',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      `Contest Draw ID:           ${result.drawId}`,
+      `Draw Date & Time:          ${drawDate.toLocaleString()} (${drawDate.toISOString()})`,
+      `Report Generated:          ${reportDate.toLocaleString()}`,
+      `Total Participants:         ${result.totalParticipants}`,
+      `Winners Selected:          ${result.winners.length}`,
+      `CSV Format Detected:        ${result.csvFormat === 'google-forms' ? 'Google Forms Export' : 'Simple CSV'}`,
+      `Randomization Method:       Cryptographically Secure (Web Crypto API)`,
+      `Algorithm Used:            Fisher-Yates Shuffle (Durstenfeld variant)`,
+      '',
+      'CSV PROCESSING DETAILS',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      `Source Information:        ${result.processingDetails.csvSourceInfo}`,
+      `Total Entries Processed:   ${result.processingDetails.validationResults.totalEntries}`,
+      `Valid Entries:             ${result.processingDetails.validationResults.validEntries}`,
+      `Invalid Entries:           ${result.processingDetails.validationResults.invalidEntries}`,
+      `Duplicates Removed:        ${result.processingDetails.validationResults.duplicatesRemoved}`,
+      '',
+      'Parsing Notes:',
+      ...result.processingDetails.parsingNotes.map(note => `  • ${note}`),
+      '',
+      'COMPLETE PARTICIPANT LIST',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      'All participants in original order (before randomization):',
+      '',
+      ...result.allParticipants.map((participant, idx) => 
+        `${(idx + 1).toString().padStart(3, ' ')}. ${participant.name.padEnd(25)} | ${participant.email}`
+      ),
+      '',
+      'DETAILED RANDOMIZATION PROCESS',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      'Random Number Generation:',
+      `  • Entropy Source:         OS-level hardware random number generator`,
+      `  • API Used:              Web Crypto API crypto.getRandomValues()`,
+      `  • Security Level:         Cryptographic (suitable for security applications)`,
+      `  • Statistical Entropy:   ${entropy.toFixed(6)} bits`,
+      `  • Mean Random Value:     ${meanRandom.toFixed(6)}`,
+      `  • Variance:              ${variance.toFixed(6)}`,
+      '',
+      'Fisher-Yates Shuffle Process:',
+      '  Step-by-step randomization (showing each swap operation):',
+      '',
+      ...result.randomizationDetails.shuffleSteps.map(step => 
+        `  Step ${step.step.toString().padStart(2, ' ')}: ${step.description.padEnd(35)} | ` +
+        `Participant: ${step.participant.name.padEnd(20)} | ` +
+        `Random Value: ${step.randomValue.toFixed(6)} | ` +
+        `New Position: ${step.newPosition}`
+      ),
+      '',
+      'POST-SHUFFLE PARTICIPANT ORDER',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      'Complete participant list after randomization (in selection order):',
+      '',
+      ...result.randomizationDetails.postShuffleOrder.map((participant, idx) => 
+        `${(idx + 1).toString().padStart(3, ' ')}. ${participant.name.padEnd(25)} | ${participant.email}`
+      ),
+      '',
+      'WINNER SELECTION',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      `Selected first ${result.winners.length} participants from shuffled list:`,
+      '',
+      ...result.winners.map((winner, idx) => 
+        `  ${(idx + 1).toString().padStart(2, ' ')}. ${winner.name.padEnd(25)} | ${winner.email}`
+      ),
+      '',
+      'TECHNICAL VERIFICATION DATA',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      'Raw Random Values Used (normalized 0-1):',
+      ...result.randomizationDetails.randomValues.map((val, idx) => 
+        `  Position ${idx.toString().padStart(2, ' ')}: ${val.toFixed(8)}`
+      ),
+      '',
+      'Algorithm Implementation:',
+      '  1. Generate cryptographically secure random values for each participant',
+      '  2. Apply Fisher-Yates shuffle using these random values',
+      '  3. Select first N participants from the shuffled array',
+      '',
+      'Security Properties:',
+      '  ✓ Uses browser-native Web Crypto API for random number generation',
+      '  ✓ Random values generated using OS-level entropy sources',
+      '  ✓ Algorithm is mathematically proven to be unbiased',
+      '  ✓ Suitable for security-sensitive applications and contests',
+      '  ✓ Each participant has equal probability of selection',
+      '',
+      'VERIFICATION INSTRUCTIONS',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      'To verify this draw was fair and legitimate:',
+      '',
+      '1. Reproducibility:',
+      '   • Use the same random values with Fisher-Yates algorithm',
+      '   • Verify the shuffle steps produce the same result',
+      '   • Confirm winner selection from first N positions',
+      '',
+      '2. Statistical Analysis:',
+      '   • Check random value distribution (should be uniform)',
+      '   • Verify entropy quality (should be high)',
+      '   • Confirm no patterns or biases in selection',
+      '',
+      '3. Technical Verification:',
+      '   • Review Web Crypto API documentation',
+      '   • Verify Fisher-Yates algorithm implementation',
+      '   • Check timestamp and draw ID consistency',
+      '',
+      '4. External Resources:',
+      '   • Fisher-Yates Shuffle: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle',
+      '   • Web Crypto API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API',
+      '   • Source Code: Available in repository for full audit',
+      '',
+      'CERTIFICATION',
+      '───────────────────────────────────────────────────────────────────────────────────────',
+      '',
+      'This report certifies that the above winners were selected using a',
+      'cryptographically secure random number generator and the Fisher-Yates',
+      'shuffle algorithm, ensuring a completely fair and unbiased draw process.',
+      '',
+      'The randomization process has been fully documented and can be',
+      'independently verified using the provided random values and algorithm.',
+      '',
+      `Report generated: ${reportDate.toLocaleString()}`,
+      `Draw ID: ${result.drawId}`,
+      '═══════════════════════════════════════════════════════════════════════════════════════',
+    ].join('\n');
+
+    // Generate comprehensive JSON report
+    const jsonReport = {
       drawId: result.drawId,
       timestamp: result.timestamp,
-      totalParticipants: result.totalParticipants,
-      winnersCount: result.winners.length,
-      winners: result.winners,
-      auditInfo: {
-        randomizationMethod: 'Cryptographically secure (crypto.getRandomValues)',
-        algorithm: 'Fisher-Yates shuffle with crypto random values',
+      reportGenerated: reportDate.toISOString(),
+      executiveSummary: {
+        totalParticipants: result.totalParticipants,
+        winnersCount: result.winners.length,
+        csvFormat: result.csvFormat,
+        randomizationMethod: 'Cryptographically secure (Web Crypto API)',
+        algorithm: 'Fisher-Yates shuffle (Durstenfeld variant)'
+      },
+      csvProcessing: {
+        sourceInfo: result.processingDetails.csvSourceInfo,
+        parsingNotes: result.processingDetails.parsingNotes,
+        validationResults: result.processingDetails.validationResults
+      },
+      participants: {
+        allParticipants: result.allParticipants,
+        preShuffleOrder: result.randomizationDetails.preShuffleOrder,
+        postShuffleOrder: result.randomizationDetails.postShuffleOrder,
+        winners: result.winners
+      },
+      randomization: {
+        randomValues: result.randomizationDetails.randomValues,
+        shuffleSteps: result.randomizationDetails.shuffleSteps,
+        statisticalAnalysis: {
+          entropy: entropy,
+          meanRandomValue: meanRandom,
+          variance: variance,
+          sampleSize: result.randomizationDetails.randomValues.length
+        }
+      },
+      technicalDetails: {
+        randomNumberGenerator: 'Web Crypto API crypto.getRandomValues()',
+        shuffleAlgorithm: 'Fisher-Yates (Durstenfeld variant)',
         securityLevel: 'Cryptographic (suitable for security-sensitive applications)',
         entropySource: 'OS-level entropy sources (hardware RNG, system noise)',
-        drawDate: new Date(result.timestamp).toLocaleString(),
-        technicalDetails: {
-          randomNumberGenerator: 'Web Crypto API crypto.getRandomValues()',
-          shuffleAlgorithm: 'Fisher-Yates (Durstenfeld variant)',
-          timeComplexity: 'O(n)',
-          biasLevel: 'Mathematically proven unbiased',
-          selectionMethod: 'First N elements from shuffled array'
-        }
+        timeComplexity: 'O(n)',
+        biasLevel: 'Mathematically proven unbiased',
+        selectionMethod: 'First N elements from shuffled array'
+      },
+      verification: {
+        reproducibilityInstructions: [
+          'Use provided random values with Fisher-Yates algorithm',
+          'Verify shuffle steps produce same result',
+          'Confirm winner selection from first N positions'
+        ],
+        externalResources: [
+          'Fisher-Yates Shuffle: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle',
+          'Web Crypto API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API'
+        ]
       }
     };
 
-    // Generate readable text report
-    const textContent = [
-      '═══════════════════════════════════════════════════════',
-      '          CONTEST DRAW AUDIT REPORT',
-      '═══════════════════════════════════════════════════════',
-      '',
-      `Draw ID: ${result.drawId}`,
-      `Draw Date: ${new Date(result.timestamp).toLocaleString()}`,
-      `Total Participants: ${result.totalParticipants}`,
-      `Winners Selected: ${result.winners.length}`,
-      '',
-      '───────────────────────────────────────────────────────',
-      'RANDOMIZATION METHOD & TECHNICAL DETAILS',
-      '───────────────────────────────────────────────────────',
-      'Random Number Generator: Web Crypto API crypto.getRandomValues()',
-      'Algorithm: Fisher-Yates shuffle (Durstenfeld variant)',
-      'Security Level: Cryptographic (suitable for security-sensitive applications)',
-      'Entropy Source: OS-level entropy sources (hardware RNG, system noise)',
-      'Time Complexity: O(n) - linear time',
-      'Bias Level: Mathematically proven unbiased',
-      'Selection Method: First N elements from shuffled array',
-      '',
-      'TECHNICAL IMPLEMENTATION:',
-      '1. Generate cryptographically secure random values for each participant',
-      '2. Apply Fisher-Yates shuffle using these random values',
-      '3. Select first N participants from the shuffled array (configurable)',
-      '',
-      'SECURITY NOTES:',
-      '- Uses browser-native Web Crypto API for random number generation',
-      '- Random values are generated using OS-level entropy sources',
-      '- Algorithm is mathematically proven to be unbiased',
-      '- Suitable for security-sensitive applications and contests',
-      '',
-      '───────────────────────────────────────────────────────',
-      'WINNERS',
-      '───────────────────────────────────────────────────────',
-      '',
-      ...result.winners.map((w, idx) => 
-        `${(idx + 1).toString().padStart(2, ' ')}. ${w.name}\n    Email: ${w.email}\n`
-      ),
-      '───────────────────────────────────────────────────────',
-      '',
-      'This report certifies that the above winners were selected',
-      'using a cryptographically secure random number generator,',
-      'ensuring a fair and unbiased draw process.',
-      '',
-      `Report generated: ${new Date().toLocaleString()}`,
-      '═══════════════════════════════════════════════════════',
-    ].join('\n');
-
+    // Download text report
     const textBlob = new Blob([textContent], { type: 'text/plain' });
     const textUrl = URL.createObjectURL(textBlob);
     const textLink = document.createElement('a');
     textLink.href = textUrl;
-    textLink.download = `contest-draw-report-${result.drawId}.txt`;
+    textLink.download = `contest-draw-audit-report-${result.drawId}.txt`;
     textLink.click();
     URL.revokeObjectURL(textUrl);
 
-    // Also generate JSON for technical audit
-    const jsonBlob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    // Download JSON report
+    const jsonBlob = new Blob([JSON.stringify(jsonReport, null, 2)], { type: 'application/json' });
     const jsonUrl = URL.createObjectURL(jsonBlob);
     const jsonLink = document.createElement('a');
     jsonLink.href = jsonUrl;
@@ -155,7 +304,7 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
             className="w-full"
           >
             <Download className="w-4 h-4 mr-2" />
-            Download Audit Report (TXT + JSON)
+            Download Comprehensive Audit Report (TXT + JSON)
           </Button>
         </div>
       </CardContent>
