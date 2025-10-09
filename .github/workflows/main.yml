@@ -135,16 +135,8 @@ jobs:
       uses: docker/setup-buildx-action@v3
       
     - name: Build Production Container Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: false
-        tags: jambo-draw-winner:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        
-    - name: Verify Container Image Build
       run: |
+        docker build -t jambo-draw-winner:latest .
         echo "✅ Docker container image built successfully"
         docker images jambo-draw-winner:latest
         
