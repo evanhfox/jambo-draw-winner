@@ -8,46 +8,22 @@ interface FileUploadProps {
 
 export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
   const parseCSV = (text: string) => {
-    const lines = text.split('\n').filter(line => line.trim());
+    const lines = text.split('\n');
     const participants: Array<{ name: string; email: string }> = [];
+    const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/;
     
-    // Skip header rows (lines that don't contain valid email addresses)
-    let dataStarted = false;
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) continue;
       
-      // Split by comma, but be mindful of quoted fields
-      const parts = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+      const emailMatch = trimmedLine.match(emailPattern);
+      if (!emailMatch) continue;
       
-      // Look for email pattern in the line
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      let email = '';
-      let timestamp = '';
-      
-      // Find the email in the parts
-      for (let j = 0; j < parts.length; j++) {
-        if (emailPattern.test(parts[j])) {
-          email = parts[j];
-          // If there's a timestamp before the email (first column), capture it
-          if (j > 0 && /^\d{4}-\d{2}-\d{2}/.test(parts[0])) {
-            timestamp = parts[0];
-          }
-          break;
-        }
-      }
-      
-      // Skip header rows or lines without valid emails
-      if (!email) continue;
-      
-      dataStarted = true;
-      
-      // Extract name from email (before the @)
+      const email = emailMatch[0];
       const name = email.split('@')[0]
         .replace(/[._-]/g, ' ')
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
       
       participants.push({ name, email });
