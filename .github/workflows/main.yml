@@ -13,8 +13,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Phase 1: Quality Assurance & Testing
-  quality-assurance:
+  # Phase 1: Code Testing & Quality Checks
+  code-tests:
     runs-on: ubuntu-latest
     outputs:
       tests-passed: ${{ steps.test-result.outcome == 'success' }}
@@ -46,7 +46,7 @@ jobs:
   # Phase 2: Application Build & Packaging
   application-build:
     runs-on: ubuntu-latest
-    needs: quality-assurance
+    needs: code-tests
     
     steps:
     - name: Checkout code
@@ -177,7 +177,7 @@ jobs:
   # Phase 6: Production Deployment
   production-deployment:
     runs-on: ubuntu-latest
-    needs: [quality-assurance, application-build, application-security-scan, container-build, container-security-scan]
+    needs: [code-tests, application-build, application-security-scan, container-build, container-security-scan]
     if: github.ref == 'refs/heads/main'
     
     steps:
