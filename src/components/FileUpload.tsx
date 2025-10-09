@@ -8,25 +8,17 @@ interface FileUploadProps {
 
 export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
   const parseCSV = (text: string) => {
-    const lines = text.split('\n');
+    const lines = text.split('\n').filter(line => line.trim());
     const participants: Array<{ name: string; email: string }> = [];
-    const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/;
     
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) continue;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
       
-      const emailMatch = trimmedLine.match(emailPattern);
-      if (!emailMatch) continue;
-      
-      const email = emailMatch[0];
-      const name = email.split('@')[0]
-        .replace(/[._-]/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      
-      participants.push({ name, email });
+      const [name, email] = line.split(',').map(s => s.trim());
+      if (name && email) {
+        participants.push({ name, email });
+      }
     }
     
     return participants;
@@ -74,7 +66,7 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
             Drop your CSV file here or click to browse
           </p>
           <p className="text-muted-foreground text-xs mt-2">
-            Supports multiple formats: name,email or Google Forms exports
+            Format: name,email (one per line)
           </p>
         </div>
         <input
