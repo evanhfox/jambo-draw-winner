@@ -11,17 +11,90 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
     const lines = text.split('\n').filter(line => line.trim());
     const participants: Array<{ name: string; email: string }> = [];
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-      
-      const [name, email] = line.split(',').map(s => s.trim());
-      if (name && email) {
-        participants.push({ name, email });
+    // Check if this looks like a Google Forms CSV (has headers)
+    const firstLine = lines[0]?.trim();
+    const isGoogleForms = firstLine && (
+      firstLine.includes('Timestamp') || 
+      firstLine.includes('Email Address') ||
+      firstLine.includes('Email')
+    );
+    
+    if (isGoogleForms) {
+      // Parse Google Forms CSV format
+      for (let i = 1; i < lines.length; i++) { // Skip header row
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Parse CSV line properly handling quoted fields
+        const fields = parseCSVLine(line);
+        if (fields.length >= 2) {
+          const timestamp = fields[0];
+          const email = fields[1];
+          
+          if (email && isValidEmail(email)) {
+            // Extract name from email (everything before @)
+            const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            participants.push({ name, email });
+          }
+        }
+      }
+    } else {
+      // Parse simple CSV format (name,email)
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const [name, email] = line.split(',').map(s => s.trim());
+        if (name && email) {
+          participants.push({ name, email });
+        }
       }
     }
     
     return participants;
+  };
+
+  // Helper function to parse CSV line with proper quote handling
+  const parseCSVLine = (line: string): string[] => {
+    const fields: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    let i = 0;
+    
+    while (i < line.length) {
+      const char = line[i];
+      
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          // Escaped quote
+          current += '"';
+          i += 2;
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+          i++;
+        }
+      } else if (char === ',' && !inQuotes) {
+        // Field separator
+        fields.push(current.trim());
+        current = '';
+        i++;
+      } else {
+        current += char;
+        i++;
+      }
+    }
+    
+    // Add the last field
+    fields.push(current.trim());
+    
+    return fields;
+  };
+
+  // Helper function to validate email format
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const handleFile = useCallback((file: File) => {
@@ -32,7 +105,7 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
       onFileUpload(participants);
     };
     reader.readAsText(file);
-  }, [onFileUpload]);
+  }, [onFileUpload, parseCSV]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -66,7 +139,7 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
             Drop your CSV file here or click to browse
           </p>
           <p className="text-muted-foreground text-xs mt-2">
-            Format: name,email (one per line)
+            Supports: Simple CSV (name,email) or Google Forms exports
           </p>
         </div>
         <input

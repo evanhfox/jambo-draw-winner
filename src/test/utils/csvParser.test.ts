@@ -5,17 +5,90 @@ function parseCSV(text: string): Array<{ name: string; email: string }> {
   const lines = text.split('\n').filter(line => line.trim())
   const participants: Array<{ name: string; email: string }> = []
   
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (!line) continue
-    
-    const [name, email] = line.split(',').map(s => s.trim())
-    if (name && email) {
-      participants.push({ name, email })
+  // Check if this looks like a Google Forms CSV (has headers)
+  const firstLine = lines[0]?.trim()
+  const isGoogleForms = firstLine && (
+    firstLine.includes('Timestamp') || 
+    firstLine.includes('Email Address') ||
+    firstLine.includes('Email')
+  )
+  
+  if (isGoogleForms) {
+    // Parse Google Forms CSV format
+    for (let i = 1; i < lines.length; i++) { // Skip header row
+      const line = lines[i].trim()
+      if (!line) continue
+      
+      // Parse CSV line properly handling quoted fields
+      const fields = parseCSVLine(line)
+      if (fields.length >= 2) {
+        const timestamp = fields[0]
+        const email = fields[1]
+        
+        if (email && isValidEmail(email)) {
+          // Extract name from email (everything before @)
+          const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          participants.push({ name, email })
+        }
+      }
+    }
+  } else {
+    // Parse simple CSV format (name,email)
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (!line) continue
+      
+      const [name, email] = line.split(',').map(s => s.trim())
+      if (name && email) {
+        participants.push({ name, email })
+      }
     }
   }
   
   return participants
+}
+
+// Helper function to parse CSV line with proper quote handling
+function parseCSVLine(line: string): string[] {
+  const fields: string[] = []
+  let current = ''
+  let inQuotes = false
+  let i = 0
+  
+  while (i < line.length) {
+    const char = line[i]
+    
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        // Escaped quote
+        current += '"'
+        i += 2
+      } else {
+        // Toggle quote state
+        inQuotes = !inQuotes
+        i++
+      }
+    } else if (char === ',' && !inQuotes) {
+      // Field separator
+      fields.push(current.trim())
+      current = ''
+      i++
+    } else {
+      current += char
+      i++
+    }
+  }
+  
+  // Add the last field
+  fields.push(current.trim())
+  
+  return fields
+}
+
+// Helper function to validate email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
 }
 
 describe('CSV Parser', () => {
@@ -222,5 +295,118 @@ describe('CSV Parser', () => {
     
     // Should not parse correctly since we're splitting on commas
     expect(result).toEqual([])
+  })
+
+  describe('Google Forms CSV parsing', () => {
+    it('parses Google Forms CSV with headers correctly', () => {
+      const csvContent = `Timestamp,Email Address,"Key Requirements and Logistics for Jamboard Pickup
+Please read the following requirements carefully before expressing interest:
+Pickup Deadline
+All Jamboards must be picked up and removed from the Ottawa Office by the end of day on October 10th, 2025. After this date, these devices will be scheduled for electronic disposal.
+Transportation Responsibility
+The recipient is solely responsible for all moving and transport logistics. Due to the Jamboard's size and weight, you will need:
+- A suitable vehicle (e.g., truck, large SUV, or van). It will not fit in a standard car.
+- Two people are suggested to move it safely.
+Dimensions & Weight
+These are large and heavy commercial displays.
+Approximate Dimensions: 53.2″ (W) x 32.4″ (H) x 3.5″ (D)
+Approximate Weight: 90 lbs (display only), plus the weight of the rolling stand if included.
+Support: No support is available from Google or Payments Canada. Devices are factory reset and contain no corporate data or configurations."
+2025-09-24 14:35:05,lbooth@payments.ca,"I understand and agree to the requirements and logistics. Please submit my name for consideration., I confirm I am interested even if the device does not include the stand (i.e wall mount only)"
+2025-09-24 14:36:44,abelangour@payments.ca,"I understand and agree to the requirements and logistics. Please submit my name for consideration., I confirm I am interested even if the device does not include the stand (i.e wall mount only)"`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'Lbooth', email: 'lbooth@payments.ca' },
+        { name: 'Abelangour', email: 'abelangour@payments.ca' }
+      ])
+    })
+
+    it('handles Google Forms CSV with quoted fields containing commas', () => {
+      const csvContent = `Timestamp,Email Address,Response
+2025-09-24 14:35:05,john.doe@example.com,"I understand, and agree to the requirements, and logistics."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested, even if the device does not include the stand."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'John Doe', email: 'john.doe@example.com' },
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
+
+    it('handles Google Forms CSV with escaped quotes', () => {
+      const csvContent = `Timestamp,Email Address,Response
+2025-09-24 14:35:05,john.doe@example.com,"I understand ""and agree"" to the requirements."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'John Doe', email: 'john.doe@example.com' },
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
+
+    it('handles Google Forms CSV with invalid email addresses', () => {
+      const csvContent = `Timestamp,Email Address,Response
+2025-09-24 14:35:05,invalid-email,"I understand and agree to the requirements."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
+
+    it('handles Google Forms CSV with empty email field', () => {
+      const csvContent = `Timestamp,Email Address,Response
+2025-09-24 14:35:05,,"I understand and agree to the requirements."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
+
+    it('handles Google Forms CSV with different header variations', () => {
+      const csvContent = `Timestamp,Email,Response
+2025-09-24 14:35:05,john.doe@example.com,"I understand and agree to the requirements."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'John Doe', email: 'john.doe@example.com' },
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
+
+    it('handles Google Forms CSV with only headers', () => {
+      const csvContent = `Timestamp,Email Address,"Key Requirements and Logistics for Jamboard Pickup"`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([])
+    })
+
+    it('handles Google Forms CSV with mixed valid and invalid entries', () => {
+      const csvContent = `Timestamp,Email Address,Response
+2025-09-24 14:35:05,john.doe@example.com,"I understand and agree to the requirements."
+2025-09-24 14:36:44,invalid-email,"I confirm I am interested."
+2025-09-24 14:37:00,jane.smith@example.com,"I confirm I am interested."
+2025-09-24 14:38:00,,"I understand and agree to the requirements."`
+      
+      const result = parseCSV(csvContent)
+      
+      expect(result).toEqual([
+        { name: 'John Doe', email: 'john.doe@example.com' },
+        { name: 'Jane Smith', email: 'jane.smith@example.com' }
+      ])
+    })
   })
 })

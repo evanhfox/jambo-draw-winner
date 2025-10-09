@@ -15,7 +15,7 @@ describe('FileUpload Component', () => {
       
       expect(screen.getByText('Upload Participant List')).toBeInTheDocument()
       expect(screen.getByText('Drop your CSV file here or click to browse')).toBeInTheDocument()
-      expect(screen.getByText('Format: name,email (one per line)')).toBeInTheDocument()
+      expect(screen.getByText('Supports: Simple CSV (name,email) or Google Forms exports')).toBeInTheDocument()
     })
 
     it('has upload icon', () => {
@@ -46,7 +46,7 @@ describe('FileUpload Component', () => {
       render(<FileUpload onFileUpload={mockOnFileUpload} />)
       
       expect(screen.getByText('Drop your CSV file here or click to browse')).toBeInTheDocument()
-      expect(screen.getByText('Format: name,email (one per line)')).toBeInTheDocument()
+      expect(screen.getByText('Supports: Simple CSV (name,email) or Google Forms exports')).toBeInTheDocument()
     })
   })
 

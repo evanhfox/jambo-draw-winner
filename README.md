@@ -1,14 +1,39 @@
 # Contest Draw Platform 🎲
 
-A secure, auditable, and truly random contest draw platform built with React, TypeScript, and cryptographically secure randomization.
+A secure, auditable, and truly random contest draw platform built with React, TypeScript, and cryptographically secure randomization. Perfect for selecting winners from participant lists, including Google Forms exports.
 
-## 🔒 Security Features
+## ✨ Key Features
 
-- **Cryptographically Secure**: Uses `crypto.getRandomValues()` for true randomness
-- **Fisher-Yates Shuffle**: Mathematically proven unbiased selection algorithm
-- **Audit Trail**: Complete documentation with timestamps and unique draw IDs
-- **Transparent Process**: Detailed explanations and visual demonstrations
-- **Downloadable Reports**: TXT and JSON audit reports for verification
+- **📊 Multiple CSV Formats**: Supports both simple CSV (`name,email`) and Google Forms exports
+- **🔒 Cryptographically Secure**: Uses `crypto.getRandomValues()` for true randomness
+- **🎯 Fisher-Yates Shuffle**: Mathematically proven unbiased selection algorithm
+- **📋 Audit Trail**: Complete documentation with timestamps and unique draw IDs
+- **👁️ Transparent Process**: Detailed explanations and visual demonstrations
+- **📄 Downloadable Reports**: TXT and JSON audit reports for verification
+- **🎨 Modern UI**: Beautiful, responsive interface built with shadcn/ui and Tailwind CSS
+
+## 📊 Supported CSV Formats
+
+### Simple CSV Format
+```csv
+John Doe,john.doe@example.com
+Jane Smith,jane.smith@example.com
+Bob Wilson,bob.wilson@example.com
+```
+
+### Google Forms Export
+The platform automatically detects and parses Google Forms CSV exports, extracting participant information from the email addresses. Perfect for:
+- Event registrations
+- Contest entries
+- Survey responses
+- Interest forms
+
+**Example Google Forms CSV:**
+```csv
+Timestamp,Email Address,Response
+2025-09-24 14:35:05,john.doe@example.com,"I understand and agree to the requirements."
+2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."
+```
 
 ## 🚀 Quick Start
 
@@ -21,6 +46,22 @@ docker run -d -p 3000:80 ghcr.io/evanhfox/jambo-draw-winner:latest
 # Access at http://localhost:3000
 ```
 
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/evanhfox/jambo-draw-winner.git
+cd jambo-draw-winner
+
+# Install dependencies
+npm install
+
+# Start development server (runs on port 8080)
+npm run dev
+
+# Access at http://localhost:8080
+```
+
 ### Using Docker (Local Build)
 
 ```bash
@@ -29,19 +70,6 @@ npm run docker:prod
 
 # Development with hot reload
 npm run docker:dev
-```
-
-### Local Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
 ```
 
 ## 🐳 Docker Deployment
@@ -88,8 +116,10 @@ cd jambo-draw-winner
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (runs on port 8080)
 npm run dev
+
+# Access at http://localhost:8080
 ```
 
 ### Available Scripts
@@ -105,15 +135,31 @@ npm run dev
 | `npm run docker:dev` | Run development Docker container |
 | `npm run docker:clean` | Clean Docker system |
 
-## 🧪 Testing
+## 🧪 Testing & Verification
 
-This project includes comprehensive testing:
+This project includes comprehensive testing and helpful verification scripts:
 
+### Automated Testing
 - **Unit Tests**: Core logic and utilities
 - **Component Tests**: React component behavior
 - **Integration Tests**: End-to-end user workflows
 - **Coverage Reports**: Detailed test coverage analysis
 
+### Helper Scripts
+
+**Quick Setup Verification:**
+```bash
+# Verify your setup is complete
+./verify-setup.sh
+```
+
+**Interactive Test Runner:**
+```bash
+# Run the interactive test runner
+./test-runner.sh
+```
+
+**Manual Testing:**
 ```bash
 # Run all tests
 npm run test
@@ -123,6 +169,9 @@ npm run test:coverage
 
 # Run tests in watch mode
 npm run test:watch
+
+# Run linting
+npm run lint
 ```
 
 ## 🔒 Security & CI/CD
@@ -192,6 +241,14 @@ npx serve dist
 - [Docker Setup](./DOCKER.md) - Detailed Docker configuration
 - [Testing Guide](./TESTING.md) - Comprehensive testing documentation
 - [Manual Testing](./MANUAL_TESTING.md) - Manual testing procedures
+- [Container Setup](./CONTAINER_SETUP.md) - Container deployment guide
+
+### Key Features Documentation
+
+- **CSV Support**: Automatically detects and parses both simple CSV and Google Forms exports
+- **Security**: Cryptographically secure randomization using Web Crypto API
+- **Audit Trail**: Complete documentation of every draw with unique IDs and timestamps
+- **Modern UI**: Responsive design with drag-and-drop file upload and real-time feedback
 
 ## 🤝 Contributing
 

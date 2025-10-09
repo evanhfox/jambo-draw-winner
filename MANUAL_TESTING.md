@@ -62,7 +62,7 @@ Since the automated environment setup is having issues, here's a comprehensive m
 - [ ] File downloads successfully
 - [ ] Open downloaded file and verify format: `name,email`
 
-#### **CSV File Upload**
+#### **Simple CSV File Upload**
 - [ ] Create a test CSV file with at least 7 participants:
   ```csv
   Alice Johnson,alice@example.com
@@ -78,6 +78,20 @@ Since the automated environment setup is having issues, here's a comprehensive m
 - [ ] Upload via click-to-browse
 - [ ] Verify participants list appears
 - [ ] Verify count shows "X total entries"
+
+#### **Google Forms CSV Upload**
+- [ ] Create a Google Forms-style CSV with headers:
+  ```csv
+  Timestamp,Email Address,Response
+  2025-09-24 14:35:05,john.doe@example.com,"I understand and agree to the requirements."
+  2025-09-24 14:36:44,jane.smith@example.com,"I confirm I am interested."
+  2025-09-24 14:37:00,bob.wilson@example.com,"I understand and agree to the requirements."
+  ```
+- [ ] Upload the Google Forms CSV file
+- [ ] Verify automatic detection of Google Forms format
+- [ ] Check that names are extracted from email addresses (e.g., "john.doe@example.com" → "John Doe")
+- [ ] Verify all valid email addresses are processed
+- [ ] Test with CSV containing quoted fields and commas
 
 #### **Edge Cases**
 - [ ] Try uploading non-CSV file (should be ignored)
