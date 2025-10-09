@@ -100,6 +100,9 @@ jobs:
         scan-ref: '.'
         format: 'sarif'
         output: 'trivy-fs-results.sarif'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
         
     - name: Upload Security Scan Results to GitHub
       uses: github/codeql-action/upload-sarif@v3
@@ -113,6 +116,8 @@ jobs:
         scan-type: 'fs'
         scan-ref: '.'
         format: 'table'
+        severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
 
   # Phase 4: Container Image Build
   container-build:
@@ -160,6 +165,9 @@ jobs:
         scan-ref: 'jambo-draw-winner:latest'
         format: 'sarif'
         output: 'trivy-container-results.sarif'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
         
     - name: Upload Container Security Scan Results to GitHub
       uses: github/codeql-action/upload-sarif@v3
@@ -173,6 +181,8 @@ jobs:
         scan-type: 'image'
         scan-ref: 'jambo-draw-winner:latest'
         format: 'table'
+        severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
 
   # Phase 6: Production Deployment
   production-deployment:
