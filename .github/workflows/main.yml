@@ -13,29 +13,29 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Phase 1: Testing
-  test:
+  # Phase 1: Quality Assurance & Testing
+  quality-assurance:
     runs-on: ubuntu-latest
     outputs:
-      test-passed: ${{ steps.test-result.outcome == 'success' }}
+      tests-passed: ${{ steps.test-result.outcome == 'success' }}
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Bun
+    - name: Setup Bun Runtime
       uses: oven-sh/setup-bun@v1
       with:
         bun-version: latest
         
-    - name: Install dependencies
+    - name: Install Dependencies
       run: bun install
       
-    - name: Run tests with coverage
+    - name: Run Unit Tests with Coverage
       id: test-result
       run: bun run test:coverage
       
-    - name: Upload coverage to Codecov
+    - name: Upload Test Coverage to Codecov
       uses: codecov/codecov-action@v5
       with:
         files: ./coverage/lcov.info
@@ -43,10 +43,10 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
-  # Phase 2: Security Scanning
-  security-scan:
+  # Phase 2: Security Vulnerability Assessment
+  security-assessment:
     runs-on: ubuntu-latest
-    needs: test
+    needs: quality-assurance
     permissions:
       contents: read
       security-events: write
@@ -55,7 +55,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Run Trivy filesystem scan
+    - name: Run Trivy Filesystem Vulnerability Scan
       id: trivy-fs
       uses: aquasecurity/trivy-action@master
       with:
@@ -64,49 +64,49 @@ jobs:
         format: 'sarif'
         output: 'trivy-fs-results.sarif'
         
-    - name: Upload Trivy filesystem scan results
+    - name: Upload Security Scan Results to GitHub
       uses: github/codeql-action/upload-sarif@v3
       if: always() && steps.trivy-fs.outcome == 'success'
       with:
         sarif_file: 'trivy-fs-results.sarif'
         
-    - name: Run Trivy vulnerability scanner (table output)
+    - name: Display Vulnerability Report
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
         scan-ref: '.'
         format: 'table'
 
-  # Phase 3: Build Application
-  build:
+  # Phase 3: Application Build & Packaging
+  application-build:
     runs-on: ubuntu-latest
-    needs: [test, security-scan]
+    needs: [quality-assurance, security-assessment]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Bun
+    - name: Setup Bun Runtime
       uses: oven-sh/setup-bun@v1
       with:
         bun-version: latest
         
-    - name: Install dependencies
+    - name: Install Dependencies
       run: bun install
       
-    - name: Build application
+    - name: Build Production Application
       run: bun run build
       
-    - name: Upload build artifacts
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: build-files
+        name: production-build
         path: dist/
 
-  # Phase 4: Build Container
-  build-container:
+  # Phase 4: Container Image Build
+  container-build:
     runs-on: ubuntu-latest
-    needs: [test, security-scan]
+    needs: [quality-assurance, security-assessment]
     
     steps:
     - name: Checkout code
@@ -115,7 +115,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
-    - name: Build Docker image
+    - name: Build Production Container Image
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -124,34 +124,34 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
-    - name: Verify image build
+    - name: Verify Container Image Build
       run: |
-        echo "Docker image built successfully"
+        echo "✅ Docker container image built successfully"
         docker images jambo-draw-winner:latest
 
-  # Phase 5: Deploy (only on main branch)
-  deploy:
+  # Phase 5: Production Deployment
+  production-deployment:
     runs-on: ubuntu-latest
-    needs: [test, build, build-container]
+    needs: [quality-assurance, application-build, container-build]
     if: github.ref == 'refs/heads/main'
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Bun for Pages
+    - name: Setup Bun Runtime for Deployment
       uses: oven-sh/setup-bun@v1
       with:
         bun-version: latest
         
-    - name: Install dependencies
+    - name: Install Dependencies
       run: bun install
         
-    - name: Build for Pages
+    - name: Build Application for Production
       run: bun run build
         
-    - name: Upload build artifacts
+    - name: Upload Production Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: pages-build
+        name: production-deployment
         path: dist/
