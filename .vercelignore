@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+bun.lockb
+package-lock.json
+
+# Build outputs
+dist/
+coverage/
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation (optional - remove if you want docs deployed)
+docs/
+*.md
+!README.md
+
+# Test files
+src/test/
+test-runner.sh
+verify-setup.sh
+
+# Docker files (not needed for Vercel)
+Dockerfile*
+docker-compose.yml
+nginx.conf
+
+# CI/CD files (not needed for Vercel)
+.github/
+
+# Scripts
+setup-branch-protection.sh
