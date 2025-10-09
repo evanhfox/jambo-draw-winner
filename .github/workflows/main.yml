@@ -107,7 +107,7 @@ jobs:
         ignore-unfixed: true
         
     - name: Upload Security Scan Results to GitHub
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       if: always() && steps.trivy-fs.outcome == 'success'
       with:
         sarif_file: 'trivy-fs-results.sarif'
@@ -155,7 +155,7 @@ jobs:
         ignore-unfixed: true
         
     - name: Upload Container Security Scan Results to GitHub
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       if: always() && steps.trivy-container.outcome == 'success'
       with:
         sarif_file: 'trivy-container-results.sarif'
