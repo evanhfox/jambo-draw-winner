@@ -119,10 +119,13 @@ jobs:
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true
 
-  # Phase 4: Container Image Build
-  container-build:
+  # Phase 4: Container Build & Security Scan
+  container-build-and-scan:
     runs-on: ubuntu-latest
     needs: application-build
+    permissions:
+      contents: read
+      security-events: write
     
     steps:
     - name: Checkout code
@@ -144,19 +147,7 @@ jobs:
       run: |
         echo "✅ Docker container image built successfully"
         docker images jambo-draw-winner:latest
-
-  # Phase 5: Container Security Scan
-  container-security-scan:
-    runs-on: ubuntu-latest
-    needs: container-build
-    permissions:
-      contents: read
-      security-events: write
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
+        
     - name: Run Trivy Container Vulnerability Scan
       id: trivy-container
       uses: aquasecurity/trivy-action@master
@@ -184,10 +175,10 @@ jobs:
         severity: 'CRITICAL,HIGH'
         ignore-unfixed: true
 
-  # Phase 6: Production Deployment
+  # Phase 5: Production Deployment
   production-deployment:
     runs-on: ubuntu-latest
-    needs: [code-tests, application-build, application-security-scan, container-build, container-security-scan]
+    needs: [code-tests, application-build, application-security-scan, container-build-and-scan]
     if: github.ref == 'refs/heads/main'
     
     steps:
