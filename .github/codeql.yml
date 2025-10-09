@@ -9,8 +9,8 @@ on:
     - cron: '0 2 * * 1' # Weekly security scan on Monday at 2 AM UTC
 
 jobs:
-  security-scan:
-    name: Security Scan
+  codeql-security-scan:
+    name: CodeQL Security Scan
     runs-on: ubuntu-latest
     permissions:
       actions: read
