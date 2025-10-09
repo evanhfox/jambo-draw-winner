@@ -44,7 +44,7 @@ jobs:
         fail_ci_if_error: false
 
   # Phase 2: Security Vulnerability Assessment
-  security-assessment:
+  security-scan:
     runs-on: ubuntu-latest
     needs: quality-assurance
     permissions:
@@ -80,7 +80,7 @@ jobs:
   # Phase 3: Application Build & Packaging
   application-build:
     runs-on: ubuntu-latest
-    needs: [quality-assurance, security-assessment]
+    needs: [quality-assurance, security-scan]
     
     steps:
     - name: Checkout code
@@ -106,7 +106,7 @@ jobs:
   # Phase 4: Container Image Build
   container-build:
     runs-on: ubuntu-latest
-    needs: [quality-assurance, security-assessment]
+    needs: [quality-assurance, security-scan]
     
     steps:
     - name: Checkout code
