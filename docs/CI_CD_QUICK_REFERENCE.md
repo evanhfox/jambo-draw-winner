@@ -2,23 +2,28 @@
 
 ## Pipeline Overview
 ```
-Code Push/PR → Quality Assurance → Security Assessment → Build (App + Container) → Deploy
+Code Push/PR → Code Tests → App Build → App Security → Container Build & Scan → Deploy
 ```
 
 ## Phase Details
 
 | Phase | Duration | Dependencies | Purpose |
 |-------|----------|--------------|---------|
-| **Quality Assurance** | ~2 min | None | Run tests + coverage |
-| **Security Assessment** | ~1 min | Quality Assurance | Scan for vulnerabilities |
-| **Application Build** | ~1 min | Quality + Security | Build production app |
-| **Container Build** | ~2 min | Quality + Security | Build Docker image |
-| **Production Deployment** | ~1 min | All previous | Deploy to Pages |
+| **Code Tests** | ~2 min | None | Run tests + coverage |
+| **Application Build** | ~1 min | Code Tests | Build production app |
+| **Application Security** | ~1 min | App Build | Scan built app for vulnerabilities |
+| **Container Build & Scan** | ~3 min | App Build | Build Docker image + scan it |
+| **Production Deployment** | ~1 min | All previous | Deploy artifacts |
 
 ## Triggers
 - **Push to main:** Full pipeline + deployment
 - **Pull Request:** All phases except deployment  
 - **Weekly:** Security scan only (Monday 2 AM UTC)
+
+## Security Gates
+- **Critical/High vulnerabilities with fixes:** Pipeline fails
+- **Critical/High without fixes:** Pipeline continues, logged
+- **Medium/Low:** Logged only
 
 ## Status Checks
 - ✅ **Green:** Phase completed successfully
@@ -28,13 +33,16 @@ Code Push/PR → Quality Assurance → Security Assessment → Build (App + Cont
 ## Quick Commands
 ```bash
 # Run tests locally
-npm run test:coverage
+bun run test:coverage
 
 # Check security
-npm audit
+bun audit
 
 # Build locally
-npm run build
+bun run build
+
+# Test Docker build
+docker build -t jambo-draw-winner:latest .
 
 # View workflow runs
 # Go to GitHub → Actions tab
@@ -43,11 +51,20 @@ npm run build
 ## Troubleshooting
 - **Tests failing:** Check test output, fix code
 - **Build failing:** Check dependencies, fix build issues
-- **Security issues:** Review Trivy reports, update dependencies
-- **Deployment failing:** Check Pages settings, verify artifacts
+- **Security scan failing:** Update dependencies, fix vulnerabilities
+- **Container scan failing:** Check Docker build, verify image exists
+- **Deployment failing:** Check artifacts, verify all phases passed
 
 ## Key Files
 - **Workflow:** `.github/workflows/main.yml`
+- **CodeQL Config:** `.github/codeql.yml`
 - **Documentation:** `docs/CI_CD_PIPELINE.md`
 - **Docker:** `Dockerfile`
 - **Package:** `package.json`
+
+## Job Names
+- `code-tests` - Unit tests and coverage
+- `application-build` - Build React app
+- `application-security-scan` - Scan built app
+- `container-build-and-scan` - Build Docker + scan it
+- `production-deployment` - Deploy artifacts

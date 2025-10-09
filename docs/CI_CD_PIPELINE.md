@@ -4,31 +4,31 @@ This document describes the complete Continuous Integration and Continuous Deplo
 
 ## 📋 Overview
 
-Our CI/CD pipeline is implemented using GitHub Actions and follows a **sequential phase-based approach** with proper dependency management. The pipeline ensures code quality, security, and reliable deployments.
+Our CI/CD pipeline is implemented using GitHub Actions and follows a **security-first approach** with proper dependency management. The pipeline ensures code quality, comprehensive security scanning, and reliable deployments.
 
 ## 🔄 Pipeline Architecture
 
 ```mermaid
 graph TD
-    A[Code Push/PR] --> B[Quality Assurance & Testing]
-    B --> C[Security Vulnerability Assessment]
-    C --> D[Application Build & Packaging]
-    C --> E[Container Image Build]
+    A[Code Push/PR] --> B[Code Tests]
+    B --> C[Application Build]
+    C --> D[Application Security Scan]
+    C --> E[Container Build & Scan]
     D --> F[Production Deployment]
     E --> F
     F --> G[Live Application]
     
     style B fill:#e1f5fe
-    style C fill:#fff3e0
-    style D fill:#f3e5f5
-    style E fill:#f3e5f5
+    style C fill:#f3e5f5
+    style D fill:#fff3e0
+    style E fill:#fff3e0
     style F fill:#e8f5e8
 ```
 
 ## 🎯 Pipeline Phases
 
-### Phase 1: Quality Assurance & Testing
-**Job Name:** `quality-assurance`
+### Phase 1: Code Testing & Quality Checks
+**Job Name:** `code-tests`
 
 **Purpose:** Ensures code quality and functionality through comprehensive testing.
 
@@ -43,22 +43,7 @@ graph TD
 **Dependencies:** None (entry point)
 **Outputs:** `tests-passed` (boolean)
 
-### Phase 2: Security Vulnerability Assessment
-**Job Name:** `security-assessment`
-
-**Purpose:** Scans the codebase for security vulnerabilities and potential threats.
-
-**Steps:**
-1. **Checkout Code** - Retrieves the latest code
-2. **Run Trivy Filesystem Vulnerability Scan** - Performs comprehensive security scanning
-3. **Upload Security Scan Results to GitHub** - Integrates results with GitHub Security tab
-4. **Display Vulnerability Report** - Shows detailed vulnerability information
-
-**Triggers:** Every push, pull request, and weekly (Monday 2 AM UTC)
-**Dependencies:** `quality-assurance` (only runs if tests pass)
-**Permissions:** `contents: read`, `security-events: write`
-
-### Phase 3: Application Build & Packaging
+### Phase 2: Application Build & Packaging
 **Job Name:** `application-build`
 
 **Purpose:** Builds the production-ready application bundle.
@@ -71,38 +56,62 @@ graph TD
 5. **Upload Build Artifacts** - Stores build artifacts for deployment
 
 **Triggers:** Every push and pull request
-**Dependencies:** `quality-assurance`, `security-assessment`
+**Dependencies:** `code-tests` (only runs if tests pass)
 **Artifacts:** `production-build` (dist/ directory)
 
-### Phase 4: Container Image Build
-**Job Name:** `container-build`
+### Phase 3: Application Security Scan
+**Job Name:** `application-security-scan`
 
-**Purpose:** Creates a Docker container image for the application.
+**Purpose:** Scans the built application and dependencies for security vulnerabilities.
 
 **Steps:**
 1. **Checkout Code** - Retrieves the latest code
-2. **Set up Docker Buildx** - Configures Docker for multi-platform builds
-3. **Build Production Container Image** - Creates Docker image with caching
+2. **Setup Bun Runtime** - Installs Bun for building
+3. **Install Dependencies** - Installs all dependencies
+4. **Build Application for Security Scan** - Creates build for scanning
+5. **Run Trivy Filesystem Vulnerability Scan** - Performs comprehensive security scanning
+6. **Upload Security Scan Results to GitHub** - Integrates results with GitHub Security tab
+7. **Display Vulnerability Report** - Shows detailed vulnerability information
+
+**Triggers:** Every push, pull request, and weekly (Monday 2 AM UTC)
+**Dependencies:** `application-build` (scans actual built artifacts)
+**Permissions:** `contents: read`, `security-events: write`
+**Security Gates:** Fails on critical/high vulnerabilities with fixes available
+
+### Phase 4: Container Build & Security Scan
+**Job Name:** `container-build-and-scan`
+
+**Purpose:** Creates a Docker container image and scans it for vulnerabilities.
+
+**Steps:**
+1. **Checkout Code** - Retrieves the latest code
+2. **Set up Docker Buildx** - Configures Docker for builds
+3. **Build Production Container Image** - Creates Docker image using standard docker build
 4. **Verify Container Image Build** - Confirms successful image creation
+5. **Run Trivy Container Vulnerability Scan** - Scans Docker image for vulnerabilities
+6. **Upload Container Security Scan Results to GitHub** - Integrates results with GitHub Security tab
+7. **Display Container Vulnerability Report** - Shows detailed container vulnerability information
 
 **Triggers:** Every push and pull request
-**Dependencies:** `quality-assurance`, `security-assessment`
+**Dependencies:** `application-build` (builds after app is ready)
+**Permissions:** `contents: read`, `security-events: write`
 **Image Tag:** `jambo-draw-winner:latest`
+**Security Gates:** Fails on critical/high vulnerabilities with fixes available
 
 ### Phase 5: Production Deployment
 **Job Name:** `production-deployment`
 
-**Purpose:** Deploys the application to GitHub Pages for public access.
+**Purpose:** Deploys the application artifacts for production use.
 
 **Steps:**
 1. **Checkout Code** - Retrieves the latest code
 2. **Setup Bun Runtime for Deployment** - Prepares Bun for deployment build
 3. **Install Dependencies** - Installs dependencies
 4. **Build Application for Production** - Creates deployment-ready build
-5. **Upload Production Build Artifacts** - Prepares artifacts for Pages deployment
+5. **Upload Production Build Artifacts** - Prepares artifacts for deployment
 
 **Triggers:** Only on `main` branch pushes
-**Dependencies:** `quality-assurance`, `application-build`, `container-build`
+**Dependencies:** `code-tests`, `application-build`, `application-security-scan`, `container-build-and-scan`
 **Artifacts:** `production-deployment` (dist/ directory)
 
 ## 🔧 Configuration Details
@@ -118,19 +127,20 @@ IMAGE_NAME: ${{ github.repository }}
 - **Pull Request:** All phases except deployment
 - **Weekly Schedule:** Security assessment (Monday 2 AM UTC)
 
-### Caching Strategy
-- **Docker Build Cache:** Uses GitHub Actions cache for faster builds
-- **Dependency Cache:** Bun automatically caches dependencies
+### Security Configuration
+- **Trivy Settings:** `exit-code: '1'`, `severity: 'CRITICAL,HIGH'`, `ignore-unfixed: true`
+- **Security Gates:** Pipeline fails on critical/high vulnerabilities with available fixes
+- **Scan Coverage:** Both application filesystem and Docker container images
 
 ## 📊 Pipeline Status Indicators
 
 | Phase | Status | Meaning |
 |-------|--------|---------|
-| 🟢 Quality Assurance | Passed | All tests pass, code quality maintained |
-| 🟡 Security Assessment | Running | Scanning for vulnerabilities |
+| 🟢 Code Tests | Passed | All tests pass, code quality maintained |
 | 🔵 Application Build | Building | Creating production bundle |
-| 🟣 Container Build | Building | Creating Docker image |
-| 🚀 Production Deployment | Deploying | Publishing to GitHub Pages |
+| 🟡 Application Security | Scanning | Scanning built app for vulnerabilities |
+| 🟡 Container Security | Scanning | Scanning Docker image for vulnerabilities |
+| 🚀 Production Deployment | Deploying | Publishing artifacts |
 
 ## 🚨 Failure Handling
 
@@ -140,9 +150,9 @@ IMAGE_NAME: ${{ github.repository }}
 - **Resolution:** Fix failing tests and push again
 
 ### Security Vulnerabilities
-- **Action:** Pipeline continues but vulnerabilities are logged
+- **Action:** Pipeline fails on critical/high vulnerabilities with fixes
 - **Notification:** Results uploaded to GitHub Security tab
-- **Resolution:** Review and address vulnerabilities
+- **Resolution:** Update dependencies or fix vulnerabilities before deployment
 
 ### Build Failures
 - **Action:** Pipeline stops, deployment is skipped
@@ -159,35 +169,38 @@ IMAGE_NAME: ${{ github.repository }}
 ### Key Metrics to Monitor
 - **Test Coverage:** Maintained above 80%
 - **Build Time:** Typically 2-3 minutes per phase
-- **Security Scan Results:** Review weekly vulnerability reports
+- **Security Scan Results:** Review vulnerability reports
 - **Deployment Success Rate:** Should be 100% for main branch
 
 ### Common Issues & Solutions
 
-#### Build Timeouts
-- **Cause:** Large dependencies or slow runners
-- **Solution:** Optimize dependencies, use caching
+#### Security Scan Failures
+- **Cause:** Critical/high vulnerabilities with fixes available
+- **Solution:** Update dependencies, review security reports
+
+#### Container Build Issues
+- **Cause:** Docker image not available for scanning
+- **Solution:** Ensure build and scan run in same job
 
 #### Test Failures
 - **Cause:** Code changes breaking existing functionality
 - **Solution:** Run tests locally before pushing
-
-#### Security Vulnerabilities
-- **Cause:** Outdated dependencies or vulnerable code
-- **Solution:** Update dependencies, review security reports
 
 ## 🛠️ Local Development Integration
 
 ### Pre-commit Checks
 ```bash
 # Run tests before pushing
-npm run test:coverage
+bun run test:coverage
 
 # Check for security vulnerabilities
-npm audit
+bun audit
 
 # Build locally to catch issues early
-npm run build
+bun run build
+
+# Test Docker build
+docker build -t jambo-draw-winner:latest .
 ```
 
 ### Testing Workflow Changes
@@ -200,38 +213,40 @@ npm run build
 ## 📈 Performance Optimization
 
 ### Current Optimizations
-- **Parallel Builds:** Application and container builds run simultaneously
+- **Sequential Security Scans:** Application and container scans run after builds
 - **Dependency Caching:** Bun caches dependencies between runs
-- **Docker Layer Caching:** Docker builds use cached layers
+- **Standard Docker Build:** Reliable image creation for security scanning
 - **Conditional Deployment:** Only deploys on main branch
 
-### Future Improvements
-- **Matrix Builds:** Test on multiple Node.js versions
-- **Artifact Reuse:** Share build artifacts between jobs
-- **Advanced Caching:** Cache more build artifacts
+### Security-First Approach
+- **Fail Fast:** Security gates prevent deployment of vulnerable code
+- **Comprehensive Coverage:** Both app and container vulnerabilities scanned
+- **Industry Standards:** Only fails on fixable critical/high vulnerabilities
 
 ## 🔐 Security Considerations
 
-### Secrets Management
-- No secrets currently required
-- GitHub Pages deployment uses built-in authentication
+### Security Gates
+- **Application Security:** Scans built application and dependencies
+- **Container Security:** Scans Docker image for base image vulnerabilities
+- **Failure Policy:** Pipeline fails on critical/high vulnerabilities with fixes
+- **Reporting:** All vulnerabilities logged to GitHub Security tab
 
 ### Access Control
 - Workflow runs with minimal required permissions
 - Security scanning has read access to code
-- Deployment requires write access to Pages
+- Security events have write access for reporting
 
 ### Vulnerability Handling
-- All vulnerabilities are logged and tracked
-- Critical vulnerabilities should be addressed immediately
-- Regular security reviews recommended
+- **Critical/High with fixes:** Pipeline fails, must be resolved
+- **Critical/High without fixes:** Pipeline continues, logged for review
+- **Medium/Low:** Logged but doesn't block deployment
 
 ## 📚 Additional Resources
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Trivy Security Scanner](https://trivy.dev/)
 - [Bun Runtime Documentation](https://bun.sh/docs)
-- [Docker Buildx Documentation](https://docs.docker.com/buildx/)
+- [Docker Documentation](https://docs.docker.com/)
 
 ## 🤝 Contributing to CI/CD
 
@@ -253,8 +268,9 @@ npm run build
 - Include proper error handling
 - Document any new phases or changes
 - Test thoroughly before merging
+- Maintain security-first approach
 
 ---
 
-*Last updated: $(date)*
-*Pipeline version: 2.0*
+*Last updated: October 2024*
+*Pipeline version: 3.0 - Security-First Architecture*
