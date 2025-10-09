@@ -1,4 +1,5 @@
 name: Complete CI/CD Pipeline
+# Updated workflow configuration for contest-draw repository
 
 on:
   push:
