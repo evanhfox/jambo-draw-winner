@@ -172,8 +172,8 @@ if [ "$overall_ok" = true ]; then
     echo ""
     echo -e "${BLUE}For Docker:${NC}"
     echo "1. Start Docker Desktop"
-    echo "2. Run: docker build -t contest-draw-winner ."
-    echo "3. Run: docker run -p 3000:80 contest-draw-winner"
+    echo "2. Run: docker build -t contest-draw ."
+    echo "3. Run: docker run -p 3000:80 contest-draw"
     echo "4. Open browser to: http://localhost:3000"
 else
     echo -e "${RED}❌ Setup verification FAILED!${NC}"

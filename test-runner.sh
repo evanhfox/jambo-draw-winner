@@ -116,11 +116,11 @@ run_docker() {
         return 1
     fi
     
-    docker build -t contest-draw-winner .
+    docker build -t contest-draw .
     
     if [ $? -eq 0 ]; then
         echo "✅ Docker image built successfully"
-        echo "Run with: docker run -p 3000:80 contest-draw-winner"
+        echo "Run with: docker run -p 3000:80 contest-draw"
     else
         echo "❌ Docker build failed"
         return 1

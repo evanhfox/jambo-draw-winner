@@ -36,12 +36,12 @@ Since the automated environment setup is having issues, here's a comprehensive m
 
 2. **Build the image**:
    ```bash
-   docker build -t contest-draw-winner .
+   docker build -t contest-draw .
    ```
 
 3. **Run the container**:
    ```bash
-   docker run -p 3000:80 contest-draw-winner
+   docker run -p 3000:80 contest-draw
    ```
 
 4. **Open browser** and go to `http://localhost:3000`
