@@ -96,6 +96,7 @@ jobs:
     - name: Run Trivy Filesystem Vulnerability Scan
       id: trivy-fs
       uses: aquasecurity/trivy-action@master
+      # Updated Trivy configuration for contest-draw repository
       with:
         scan-type: 'fs'
         scan-ref: '.'
