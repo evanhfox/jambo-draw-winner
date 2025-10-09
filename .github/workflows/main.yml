@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup Bun Runtime
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
         
@@ -53,7 +53,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup Bun Runtime
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
         
@@ -82,7 +82,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup Bun Runtime
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
         
@@ -185,7 +185,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup Bun Runtime for Deployment
-      uses: oven-sh/setup-bun@v1
+      uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
         
