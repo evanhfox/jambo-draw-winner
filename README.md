@@ -242,6 +242,8 @@ npx serve dist
 - [Testing Guide](./TESTING.md) - Comprehensive testing documentation
 - [Manual Testing](./MANUAL_TESTING.md) - Manual testing procedures
 - [Container Setup](./CONTAINER_SETUP.md) - Container deployment guide
+- [CI/CD Pipeline](./docs/CI_CD_PIPELINE.md) - Complete CI/CD workflow documentation
+- [CI/CD Quick Reference](./docs/CI_CD_QUICK_REFERENCE.md) - Quick reference for developers
 
 ### Key Features Documentation
 
