@@ -3,11 +3,11 @@ import { Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface FileUploadProps {
-  onFileUpload: (participants: Array<{ name: string; email: string }>) => void;
+  onFileUpload: (participants: Array<{ name: string; email: string }>, format: 'simple' | 'google-forms') => void;
 }
 
 export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
-  const parseCSV = (text: string) => {
+  const parseCSV = (text: string): { participants: Array<{ name: string; email: string }>, format: 'simple' | 'google-forms' } => {
     const lines = text.split('\n').filter(line => line.trim());
     const participants: Array<{ name: string; email: string }> = [];
     
@@ -38,6 +38,7 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
           }
         }
       }
+      return { participants, format: 'google-forms' };
     } else {
       // Parse simple CSV format (name,email)
       for (let i = 0; i < lines.length; i++) {
@@ -49,9 +50,8 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
           participants.push({ name, email });
         }
       }
+      return { participants, format: 'simple' };
     }
-    
-    return participants;
   };
 
   // Helper function to parse CSV line with proper quote handling
@@ -101,8 +101,8 @@ export const FileUpload = ({ onFileUpload }: FileUploadProps) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      const participants = parseCSV(text);
-      onFileUpload(participants);
+      const { participants, format } = parseCSV(text);
+      onFileUpload(participants, format);
     };
     reader.readAsText(file);
   }, [onFileUpload, parseCSV]);

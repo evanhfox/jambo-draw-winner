@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight } from 'lucide-react';
+import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight, FileText, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -25,15 +25,22 @@ interface DrawResult {
 
 const Index = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [csvFormat, setCsvFormat] = useState<'simple' | 'google-forms' | null>(null);
   const [drawResult, setDrawResult] = useState<DrawResult | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const [winnerCount, setWinnerCount] = useState<number>(7);
 
-  const handleFileUpload = (uploadedParticipants: Participant[]) => {
+  const handleFileUpload = (uploadedParticipants: Participant[], format: 'simple' | 'google-forms') => {
     setParticipants(uploadedParticipants);
+    setCsvFormat(format);
     setDrawResult(null);
-    toast.success(`Loaded ${uploadedParticipants.length} participants`);
+    
+    const formatMessage = format === 'google-forms' 
+      ? `Loaded ${uploadedParticipants.length} participants from Google Forms export`
+      : `Loaded ${uploadedParticipants.length} participants`;
+    
+    toast.success(formatMessage);
   };
 
   const performDraw = async () => {
@@ -160,6 +167,33 @@ const Index = () => {
             ) : (
               <>
                 <ParticipantsList participants={participants} />
+                
+                {/* CSV Format Indicator */}
+                {csvFormat && (
+                  <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border">
+                    {csvFormat === 'google-forms' ? (
+                      <>
+                        <Database className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-700">
+                          Google Forms CSV detected
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          Names extracted from email addresses
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-700">
+                          Simple CSV format detected
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          Direct name,email format
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
