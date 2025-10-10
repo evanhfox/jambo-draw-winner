@@ -246,7 +246,6 @@ const Index = () => {
               asChild 
               variant="outline" 
               size="sm"
-              className="hover:bg-muted"
             >
               <a 
                 href="https://github.com/evanhfox/jambo-draw-winner" 
