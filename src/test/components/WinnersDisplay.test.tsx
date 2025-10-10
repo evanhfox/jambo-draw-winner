@@ -129,7 +129,7 @@ describe('WinnersDisplay Component', () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Audit Report')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked (download functionality is complex to test in jsdom)
@@ -141,7 +141,7 @@ describe('WinnersDisplay Component', () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Audit Report')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked
@@ -149,11 +149,11 @@ describe('WinnersDisplay Component', () => {
     expect(downloadButton).toBeInTheDocument()
   })
 
-  it('generates correct JSON report content', async () => {
+  it('handles download report functionality', async () => {
     const user = userEvent.setup()
     render(<WinnersDisplay result={mockDrawResult} />)
     
-    const downloadButton = screen.getByText('Download Comprehensive Audit Report (TXT + JSON)')
+    const downloadButton = screen.getByText('Download Audit Report')
     expect(downloadButton).toBeInTheDocument()
     
     // Test that button can be clicked
@@ -285,7 +285,7 @@ describe('WinnersDisplay Component', () => {
     render(<WinnersDisplay result={mockDrawResult} />)
     
     // Check that download button is accessible
-    const downloadButton = screen.getByRole('button', { name: /Download Comprehensive Audit Report/i })
+    const downloadButton = screen.getByRole('button', { name: /Download Audit Report/i })
     expect(downloadButton).toBeInTheDocument()
     
     // Check that winner cards have proper structure

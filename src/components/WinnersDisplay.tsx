@@ -185,61 +185,6 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
       '═══════════════════════════════════════════════════════════════════════════════════════',
     ].join('\n');
 
-    // Generate comprehensive JSON report
-    const jsonReport = {
-      drawId: result.drawId,
-      timestamp: result.timestamp,
-      reportGenerated: reportDate.toISOString(),
-      executiveSummary: {
-        totalParticipants: result.totalParticipants,
-        winnersCount: result.winners.length,
-        csvFormat: result.csvFormat,
-        randomizationMethod: 'Cryptographically secure (Web Crypto API)',
-        algorithm: 'Fisher-Yates shuffle (Durstenfeld variant)'
-      },
-      csvProcessing: {
-        sourceInfo: result.processingDetails.csvSourceInfo,
-        parsingNotes: result.processingDetails.parsingNotes,
-        validationResults: result.processingDetails.validationResults
-      },
-      participants: {
-        allParticipants: result.allParticipants,
-        preShuffleOrder: result.randomizationDetails.preShuffleOrder,
-        postShuffleOrder: result.randomizationDetails.postShuffleOrder,
-        winners: result.winners
-      },
-      randomization: {
-        randomValues: result.randomizationDetails.randomValues,
-        shuffleSteps: result.randomizationDetails.shuffleSteps,
-        statisticalAnalysis: {
-          entropy: entropy,
-          meanRandomValue: meanRandom,
-          variance: variance,
-          sampleSize: result.randomizationDetails.randomValues.length
-        }
-      },
-      technicalDetails: {
-        randomNumberGenerator: 'Web Crypto API crypto.getRandomValues()',
-        shuffleAlgorithm: 'Fisher-Yates (Durstenfeld variant)',
-        securityLevel: 'Cryptographic (suitable for security-sensitive applications)',
-        entropySource: 'OS-level entropy sources (hardware RNG, system noise)',
-        timeComplexity: 'O(n)',
-        biasLevel: 'Mathematically proven unbiased',
-        selectionMethod: 'First N elements from shuffled array'
-      },
-      verification: {
-        reproducibilityInstructions: [
-          'Use provided random values with Fisher-Yates algorithm',
-          'Verify shuffle steps produce same result',
-          'Confirm winner selection from first N positions'
-        ],
-        externalResources: [
-          'Fisher-Yates Shuffle: https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle',
-          'Web Crypto API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API'
-        ]
-      }
-    };
-
     // Download text report
     const textBlob = new Blob([textContent], { type: 'text/plain' });
     const textUrl = URL.createObjectURL(textBlob);
@@ -248,15 +193,6 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
     textLink.download = `contest-draw-audit-report-${result.drawId}.txt`;
     textLink.click();
     URL.revokeObjectURL(textUrl);
-
-    // Download JSON report
-    const jsonBlob = new Blob([JSON.stringify(jsonReport, null, 2)], { type: 'application/json' });
-    const jsonUrl = URL.createObjectURL(jsonBlob);
-    const jsonLink = document.createElement('a');
-    jsonLink.href = jsonUrl;
-    jsonLink.download = `contest-draw-data-${result.drawId}.json`;
-    jsonLink.click();
-    URL.revokeObjectURL(jsonUrl);
   };
 
   return (
@@ -304,7 +240,7 @@ export const WinnersDisplay = ({ result }: WinnersDisplayProps) => {
             className="w-full"
           >
             <Download className="w-4 h-4 mr-2" />
-            Download Comprehensive Audit Report (TXT + JSON)
+            Download Audit Report
           </Button>
         </div>
       </CardContent>
