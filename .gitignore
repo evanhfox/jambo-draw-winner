@@ -27,3 +27,8 @@ dist-ssr
 # CSV files (except sample data)
 *.csv
 !public/sample-participants.csv
+
+# Temporary files
+*.tmp
+.tmp/
+temp/
