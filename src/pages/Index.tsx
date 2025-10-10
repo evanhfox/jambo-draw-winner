@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight, FileText, Database } from 'lucide-react';
+import { Sparkles, RotateCcw, Download, ChevronDown, ChevronRight, FileText, Database, Github } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
@@ -237,10 +237,28 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-4">
             Secure, auditable, and truly random winner selection
           </p>
-          <Button onClick={downloadSampleCSV} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Download Sample CSV
-          </Button>
+          <div className="flex items-center justify-center gap-3">
+            <Button onClick={downloadSampleCSV} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Download Sample CSV
+            </Button>
+            <Button 
+              asChild 
+              variant="outline" 
+              size="sm"
+              className="hover:bg-muted"
+            >
+              <a 
+                href="https://github.com/evanhfox/jambo-draw-winner" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <Github className="w-4 h-4 mr-2" />
+                View on GitHub
+              </a>
+            </Button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
